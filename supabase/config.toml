@@ -1,0 +1,22 @@
+project_id = "xwcyukfbfzfsjesgdxfk"
+
+[functions.spin-outcome]
+verify_jwt = true
+
+[functions.claim-bonus]
+verify_jwt = true
+
+[functions.deposit-handler]
+verify_jwt = true
+
+[functions.gaming-advisor]
+verify_jwt = true
+
+[functions.weekly-digest]
+verify_jwt = true
+
+[functions.ai-slot-tester]
+verify_jwt = true
+
+[functions.demo-spin]
+verify_jwt = true

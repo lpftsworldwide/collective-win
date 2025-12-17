@@ -1,0 +1,251 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ancient Egyptian Mystical Gaming Theme - CollectiveWinners.org 
+All colors MUST be HSL.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600;700;800;900&family=Crimson+Pro:wght@400;500;600&display=swap');
+
+/* Custom Animations */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+  50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px hsl(42 80% 55% / 0.4); }
+  50% { box-shadow: 0 0 40px hsl(42 80% 55% / 0.8); }
+}
+
+@keyframes hieroglyph-float {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.1; }
+  50% { transform: translateY(-30px) scale(1.1); opacity: 0.3; }
+}
+
+@keyframes mystic-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes eye-pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px hsl(42 80% 55% / 0.5)); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 0 20px hsl(42 80% 55% / 0.8)); }
+}
+
+@keyframes scarab-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-scroll-left {
+  animation: scroll-left 30s linear infinite;
+}
+
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-hieroglyph {
+  animation: hieroglyph-float 8s ease-in-out infinite;
+}
+
+.animate-eye-pulse {
+  animation: eye-pulse 3s ease-in-out infinite;
+}
+
+.glow-gold-text {
+  text-shadow: 0 0 20px hsl(42 80% 55% / 0.5), 0 0 40px hsl(42 80% 55% / 0.3);
+}
+
+/* Egyptian border patterns */
+.egyptian-border {
+  border-image: linear-gradient(90deg, 
+    transparent, 
+    hsl(42 80% 55% / 0.3), 
+    hsl(42 80% 55%), 
+    hsl(42 80% 55% / 0.3), 
+    transparent
+  ) 1;
+}
+
+.pyramid-pattern {
+  background-image: 
+    linear-gradient(135deg, hsl(42 80% 55% / 0.1) 25%, transparent 25%),
+    linear-gradient(225deg, hsl(42 80% 55% / 0.1) 25%, transparent 25%);
+  background-size: 20px 20px;
+}
+
+@layer base {
+  :root {
+    /* Deep mystical backgrounds - darker for Egyptian tombs */
+    --background: 230 30% 4%;
+    --foreground: 45 40% 88%;
+
+    --card: 230 25% 7%;
+    --card-foreground: 45 40% 88%;
+
+    --popover: 230 30% 6%;
+    --popover-foreground: 45 40% 88%;
+
+    /* Ancient gold primary - richer Egyptian gold */
+    --primary: 45 85% 50%;
+    --primary-foreground: 230 30% 4%;
+
+    /* Nile blue secondary */
+    --secondary: 195 60% 35%;
+    --secondary-foreground: 45 40% 88%;
+
+    --muted: 230 20% 12%;
+    --muted-foreground: 45 20% 50%;
+
+    /* Scarab accent - mystical purple */
+    --accent: 270 50% 40%;
+    --accent-foreground: 45 40% 88%;
+
+    --destructive: 0 75% 50%;
+    --destructive-foreground: 45 40% 88%;
+
+    --border: 45 30% 15%;
+    --input: 230 25% 10%;
+    --ring: 45 85% 50%;
+
+    --radius: 0.5rem;
+
+    /* Theme colors - Egyptian palette */
+    --premium-gold: 45 85% 50%;
+    --premium-gold-light: 45 90% 65%;
+    --premium-gold-dark: 38 80% 35%;
+    --turquoise: 180 55% 40%;
+    --turquoise-light: 180 60% 50%;
+    --gaming-dark: 230 30% 4%;
+    --gaming-card: 230 25% 7%;
+    --gaming-hover: 230 20% 12%;
+    
+    /* Mystical accents */
+    --mystic-purple: 270 50% 40%;
+    --mystic-red: 355 75% 45%;
+    --ancient-bronze: 30 70% 30%;
+    --emerald: 155 55% 35%;
+    --nile-blue: 195 60% 35%;
+    --papyrus: 40 35% 75%;
+    --scarab-green: 160 40% 25%;
+    --lapis: 220 60% 40%;
+
+    /* Gradients - Egyptian themed */
+    --gradient-premium: linear-gradient(135deg, hsl(45 85% 50%), hsl(38 80% 35%));
+    --gradient-mystic: linear-gradient(135deg, hsl(270 50% 40%), hsl(230 30% 10%));
+    --gradient-card: linear-gradient(180deg, hsl(230 25% 9%), hsl(230 30% 4%));
+    --gradient-ancient: linear-gradient(135deg, hsl(45 85% 50%), hsl(30 70% 30%));
+    --gradient-nile: linear-gradient(135deg, hsl(195 60% 35%), hsl(180 55% 25%));
+    --gradient-scarab: linear-gradient(135deg, hsl(160 40% 25%), hsl(155 55% 20%));
+    
+    /* Shadows */
+    --shadow-premium: 0 10px 40px -10px hsl(45 85% 50% / 0.4);
+    --shadow-mystic: 0 10px 40px -10px hsl(270 50% 40% / 0.3);
+    --shadow-card: 0 8px 32px -8px hsl(230 30% 2% / 0.9);
+    --shadow-glow: 0 0 30px hsl(45 85% 50% / 0.3);
+    --shadow-egyptian: 0 0 60px hsl(45 85% 50% / 0.2), inset 0 0 30px hsl(45 85% 50% / 0.05);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Crimson Pro', Georgia, serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cinzel', 'Times New Roman', serif;
+    letter-spacing: 0.05em;
+  }
+
+  .font-cinzel-decorative {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  }
+}
+
+/* Mystical animations */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-gold {
+  background: linear-gradient(90deg, transparent, hsl(45 85% 50% / 0.4), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+.glow-gold {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Egyptian hieroglyph decorative background */
+.hieroglyph-bg {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 5 L35 20 L30 35 L25 20 Z' fill='none' stroke='%23d4a84b' stroke-opacity='0.08' stroke-width='1'/%3E%3Ccircle cx='30' cy='45' r='5' fill='none' stroke='%23d4a84b' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E");
+}
+
+/* Tarot card styling */
+.tarot-card {
+  background: linear-gradient(180deg, hsl(230 25% 9%), hsl(230 30% 5%));
+  border: 1px solid hsl(45 85% 50% / 0.3);
+  border-radius: 12px;
+  box-shadow: 
+    0 0 20px hsl(45 85% 50% / 0.1),
+    inset 0 0 40px hsl(45 85% 50% / 0.03);
+}
+
+.tarot-card::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid hsl(45 85% 50% / 0.15);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+/* Eye of Horus glow effect */
+.eye-of-horus {
+  position: relative;
+}
+
+.eye-of-horus::after {
+  content: '𓂀';
+  position: absolute;
+  font-size: 1.5rem;
+  color: hsl(45 85% 50% / 0.3);
+  animation: eye-pulse 4s ease-in-out infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(230 30% 4%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, hsl(45 85% 50% / 0.5), hsl(30 70% 30% / 0.5));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, hsl(45 85% 50% / 0.7), hsl(30 70% 30% / 0.7));
+}
