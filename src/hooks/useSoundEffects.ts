@@ -1,5 +1,6 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import { useSound } from "@/contexts/SoundContext";
+import type { SpinOutcome } from "@/types/SpinOutcome";
 
 type SoundType = "bigWin" | "deposit" | "spin" | "click" | "bonus";
 
@@ -20,6 +21,8 @@ export const useSoundEffects = () => {
     type: OscillatorType = "sine",
     gainValue: number = 0.3
   ) => {
+    if (isMuted) return;
+    
     const ctx = getAudioContext();
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
@@ -35,9 +38,11 @@ export const useSoundEffects = () => {
 
     oscillator.start(ctx.currentTime);
     oscillator.stop(ctx.currentTime + duration);
-  }, [getAudioContext]);
+  }, [getAudioContext, isMuted]);
 
   const playBigWin = useCallback(() => {
+    if (isMuted) return;
+    
     const ctx = getAudioContext();
     const now = ctx.currentTime;
 
@@ -57,9 +62,11 @@ export const useSoundEffects = () => {
         }, i * 50);
       }
     }, 500);
-  }, [getAudioContext, playTone]);
+  }, [getAudioContext, playTone, isMuted]);
 
   const playDeposit = useCallback(() => {
+    if (isMuted) return;
+    
     // Cash register / coin drop sound
     playTone(800, 0.1, "square", 0.2);
     setTimeout(() => playTone(1000, 0.1, "square", 0.2), 80);
@@ -72,9 +79,11 @@ export const useSoundEffects = () => {
         }, i * 40);
       }
     }, 250);
-  }, [playTone]);
+  }, [playTone, isMuted]);
 
   const playSpin = useCallback(() => {
+    if (isMuted) return;
+    
     // Slot machine spin sound - descending whoosh
     const ctx = getAudioContext();
     const oscillator = ctx.createOscillator();
@@ -92,13 +101,16 @@ export const useSoundEffects = () => {
 
     oscillator.start(ctx.currentTime);
     oscillator.stop(ctx.currentTime + 0.3);
-  }, [getAudioContext]);
+  }, [getAudioContext, isMuted]);
 
   const playClick = useCallback(() => {
+    if (isMuted) return;
     playTone(600, 0.05, "square", 0.1);
-  }, [playTone]);
+  }, [playTone, isMuted]);
 
   const playBonus = useCallback(() => {
+    if (isMuted) return;
+    
     // Magical bonus sound
     const notes = [440, 554.37, 659.25, 880]; // A4, C#5, E5, A5
     notes.forEach((freq, i) => {
@@ -107,10 +119,10 @@ export const useSoundEffects = () => {
         playTone(freq * 1.5, 0.2, "triangle", 0.1); // Harmonic
       }, i * 80);
     });
-  }, [playTone]);
+  }, [playTone, isMuted]);
 
   const play = useCallback((type: SoundType) => {
-    if (isMuted) return; // Don't play if muted
+    if (isMuted) return;
     
     try {
       switch (type) {
@@ -135,5 +147,44 @@ export const useSoundEffects = () => {
     }
   }, [isMuted, playBigWin, playDeposit, playSpin, playClick, playBonus]);
 
-  return { play };
+  /**
+   * Play sounds based on outcome
+   * OUTCOME-DRIVEN: All sounds derive from SpinOutcome
+   */
+  const playFromOutcome = useCallback((outcome: SpinOutcome | null, previousOutcome: SpinOutcome | null) => {
+    if (isMuted || !outcome) return;
+    
+    try {
+      // Play spin sound when outcome is first received (transitioning from spinning)
+      if (previousOutcome === null && outcome) {
+        playSpin();
+      }
+      
+      // Play win sound if there's a win
+      if (outcome.totalWin > 0) {
+        // Big win threshold (adjust based on wager)
+        const bigWinThreshold = outcome.wager * 10;
+        
+        if (outcome.totalWin >= bigWinThreshold) {
+          playBigWin();
+        } else {
+          // Regular win - use a combination of tones
+          playTone(600, 0.1, "sine", 0.2);
+          setTimeout(() => playTone(800, 0.1, "sine", 0.2), 100);
+        }
+      } else {
+        // No win sound
+        playClick(); // Subtle click for no win
+      }
+      
+      // Play bonus sound if feature triggered
+      if (outcome.featureTrigger) {
+        playBonus();
+      }
+    } catch (error) {
+      console.warn("Outcome sound playback failed:", error);
+    }
+  }, [isMuted, playSpin, playBigWin, playBonus, playClick, play]);
+
+  return { play, playFromOutcome };
 };

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SoundProvider } from "@/contexts/SoundContext";
+import { ResponsibleGamblingBanner } from "@/components/ResponsibleGamblingBanner";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import GamePlay from "./pages/GamePlay";
@@ -34,6 +35,7 @@ const App = () => (
       <BrowserRouter>
         <SoundProvider>
           <AuthProvider>
+          <ResponsibleGamblingBanner />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />

@@ -1,37 +1,49 @@
+/**
+ * DEMO SPIN EDGE FUNCTION
+ * 
+ * REFACTORED: Uses SlotEngine for deterministic outcomes
+ * - Single RNG call per spin
+ * - Authoritative SpinOutcome object
+ * - No random feature triggers
+ * - All features come from outcome
+ */
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-/**
- * DEMO SPIN ENGINE
- * 
- * IMPORTANT: This is a DEMO-ONLY system using XP/Test Credits.
- * - NO real money is involved
- * - Outcomes are server-side generated for auditability
- * - All spins are logged for integrity verification
- * - RNG is seeded for reproducibility
- * 
- * Provider games are NOT built in-house - they are ONLY integrated.
- * This demo engine simulates slot mechanics for demonstration purposes only.
- */
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Demo symbol configuration - Educational simulation only
-const DEMO_SYMBOLS = [
-  { id: 'wild', name: 'Wild', weight: 5, multiplier: 50 },
-  { id: 'scatter', name: 'Scatter', weight: 8, multiplier: 20 },
-  { id: 'high1', name: 'Diamond', weight: 15, multiplier: 10 },
-  { id: 'high2', name: 'Seven', weight: 20, multiplier: 8 },
-  { id: 'high3', name: 'Bell', weight: 25, multiplier: 5 },
-  { id: 'low1', name: 'Cherry', weight: 35, multiplier: 3 },
-  { id: 'low2', name: 'Lemon', weight: 40, multiplier: 2 },
-  { id: 'low3', name: 'Orange', weight: 45, multiplier: 1.5 },
-];
+// Import SlotEngine logic (re-implemented for Deno)
+// Since we can't import from src/, we re-implement the core logic here
 
-const TOTAL_WEIGHT = DEMO_SYMBOLS.reduce((sum, s) => sum + s.weight, 0);
+interface SymbolWeight {
+  id: string;
+  name: string;
+  weight: number;
+  type: 'normal' | 'wild' | 'scatter' | 'bonus';
+}
+
+interface GameConfig {
+  gameId: string;
+  symbolWeights: SymbolWeight[];
+  reelLayout: { reels: number; rows: number };
+  rtp: number;
+}
+
+// Default symbol configuration
+const DEFAULT_SYMBOLS: SymbolWeight[] = [
+  { id: 'wild', name: 'Wild', weight: 5, type: 'wild' },
+  { id: 'scatter', name: 'Scatter', weight: 8, type: 'scatter' },
+  { id: 'high1', name: 'Diamond', weight: 15, type: 'normal' },
+  { id: 'high2', name: 'Seven', weight: 20, type: 'normal' },
+  { id: 'high3', name: 'Bell', weight: 25, type: 'normal' },
+  { id: 'low1', name: 'Cherry', weight: 35, type: 'normal' },
+  { id: 'low2', name: 'Lemon', weight: 40, type: 'normal' },
+  { id: 'low3', name: 'Orange', weight: 45, type: 'normal' },
+];
 
 // Seeded RNG for reproducibility and auditability
 function seededRandom(seed: string): () => number {
@@ -50,37 +62,45 @@ function seededRandom(seed: string): () => number {
   };
 }
 
-function selectSymbol(random: () => number): typeof DEMO_SYMBOLS[0] {
-  const roll = random() * TOTAL_WEIGHT;
-  let cumulative = 0;
+// Select symbol based on weights
+function selectSymbol(random: () => number, symbols: SymbolWeight[]): string {
+  const totalWeight = symbols.reduce((sum, s) => sum + s.weight, 0);
+  const roll = random() * totalWeight;
   
-  for (const symbol of DEMO_SYMBOLS) {
+  let cumulative = 0;
+  for (const symbol of symbols) {
     cumulative += symbol.weight;
     if (roll <= cumulative) {
-      return symbol;
+      return symbol.id;
     }
   }
   
-  return DEMO_SYMBOLS[DEMO_SYMBOLS.length - 1];
+  return symbols[0].id;
 }
 
-function generateReels(random: () => number, rows: number = 3, cols: number = 5): string[][] {
+// Generate reels (single RNG call per symbol)
+function generateReels(random: () => number, config: GameConfig): string[][] {
   const reels: string[][] = [];
+  const { reels: numReels, rows } = config.reelLayout;
   
-  for (let row = 0; row < rows; row++) {
-    const rowSymbols: string[] = [];
-    for (let col = 0; col < cols; col++) {
-      rowSymbols.push(selectSymbol(random).id);
+  for (let reel = 0; reel < numReels; reel++) {
+    const reelSymbols: string[] = [];
+    for (let row = 0; row < rows; row++) {
+      reelSymbols.push(selectSymbol(random, config.symbolWeights));
     }
-    reels.push(rowSymbols);
+    reels.push(reelSymbols);
   }
   
   return reels;
 }
 
-function calculateWin(reels: string[][], wager: number, random: () => number): { winAmount: number; winLines: number[]; multiplier: number } {
-  // Check for wins on middle row (simplified payline)
-  const middleRow = reels[1];
+// Calculate win from reels (deterministic, no RNG)
+function calculateWin(reels: string[][], wager: number): { winAmount: number; winLines: number[]; multiplier: number } {
+  const winLines: number[] = [];
+  let winAmount = 0;
+  
+  // Check middle payline (simplified)
+  const middleRow = reels.map(reel => reel[1]);
   let consecutiveMatches = 1;
   let matchSymbol = middleRow[0];
   
@@ -93,42 +113,94 @@ function calculateWin(reels: string[][], wager: number, random: () => number): {
     }
   }
   
-  // Count scatters for bonus
+  // Payline win (3+ matching)
+  if (consecutiveMatches >= 3) {
+    const symbol = DEFAULT_SYMBOLS.find(s => s.id === matchSymbol);
+    if (symbol) {
+      const multipliers = [0, 0, 3, 8, 15]; // 3, 4, 5 matches
+      const multiplier = multipliers[Math.min(consecutiveMatches - 1, multipliers.length - 1)] || 0;
+      winAmount = wager * multiplier;
+      winLines.push(1);
+    }
+  }
+  
+  // Scatter win (count all scatters)
   let scatterCount = 0;
-  for (const row of reels) {
-    for (const symbol of row) {
+  for (const reel of reels) {
+    for (const symbol of reel) {
       if (symbol === 'scatter') scatterCount++;
     }
   }
   
-  let winAmount = 0;
-  let multiplier = 1;
-  const winLines: number[] = [];
-  
-  // Payline win (3+ matching)
-  if (consecutiveMatches >= 3) {
-    const symbol = DEMO_SYMBOLS.find(s => s.id === matchSymbol);
-    if (symbol) {
-      multiplier = symbol.multiplier * (consecutiveMatches - 2);
-      winAmount = wager * multiplier;
-      winLines.push(1); // Middle payline
-    }
-  }
-  
-  // Scatter bonus (3+ scatters)
   if (scatterCount >= 3) {
     const scatterMultiplier = scatterCount * 5;
     winAmount += wager * scatterMultiplier;
-    winLines.push(0); // Scatter win indicator
+    winLines.push(0); // Scatter indicator
   }
   
-  // Random bonus trigger (demo feature showcase)
-  if (random() < 0.05) { // 5% chance
-    winAmount += wager * 10;
-    winLines.push(99); // Bonus indicator
-  }
+  // NO RANDOM BONUS - Features only from outcome structure
+  // Removed: if (random() < 0.05) - this was causing non-deterministic behavior
+  
+  const multiplier = winAmount > 0 ? winAmount / wager : 0;
   
   return { winAmount, winLines, multiplier };
+}
+
+// Generate authoritative outcome (single RNG seed)
+function generateSpinOutcome(
+  gameId: string,
+  wager: number,
+  seed: string
+): {
+  reels: string[][];
+  winAmount: number;
+  winLines: number[];
+  multiplier: number;
+  featureTrigger: { type: string; data: unknown } | null;
+} {
+  // Create RNG from seed (ONCE)
+  const random = seededRandom(seed);
+  
+  // Game config (can be extended per game)
+  const config: GameConfig = {
+    gameId,
+    symbolWeights: DEFAULT_SYMBOLS,
+    reelLayout: { reels: 5, rows: 3 },
+    rtp: 96.0,
+  };
+  
+  // Generate reels
+  const reels = generateReels(random, config);
+  
+  // Calculate win (deterministic)
+  const { winAmount, winLines, multiplier } = calculateWin(reels, wager);
+  
+  // Detect feature (deterministic - based on scatter count)
+  let featureTrigger = null;
+  let scatterCount = 0;
+  for (const reel of reels) {
+    for (const symbol of reel) {
+      if (symbol === 'scatter') scatterCount++;
+    }
+  }
+  
+  if (scatterCount >= 3) {
+    featureTrigger = {
+      type: 'free_spins',
+      data: {
+        freeSpins: 10,
+        scatterCount,
+      },
+    };
+  }
+  
+  return {
+    reels,
+    winAmount,
+    winLines,
+    multiplier,
+    featureTrigger,
+  };
 }
 
 serve(async (req) => {
@@ -206,7 +278,7 @@ serve(async (req) => {
         .insert({
           user_id: user.id,
           game_id: gameId,
-          demo_balance: 10000, // Starting demo credits
+          demo_balance: 10000,
         })
         .select()
         .single();
@@ -242,27 +314,46 @@ serve(async (req) => {
     
     const spinIndex = (count || 0) + 1;
 
-    // Generate seeded RNG for auditability
+    // Generate seed (deterministic)
     const rngSeed = `${currentSession.id}-${spinIndex}-${Date.now()}`;
-    const random = seededRandom(rngSeed);
 
-    // Generate outcome
-    const reels = generateReels(random);
-    const { winAmount, winLines, multiplier } = calculateWin(reels, wager, random);
+    // Generate authoritative outcome (SINGLE RNG CALL)
+    const outcome = generateSpinOutcome(gameId, wager, rngSeed);
 
     // Calculate new balance
-    const newBalance = currentSession.demo_balance - wager + winAmount;
+    const newBalance = currentSession.demo_balance - wager + outcome.winAmount;
 
-    // Log spin (atomic operation)
+    // Create authoritative outcome object
     const outcomeJson = {
-      reels,
-      winLines,
-      multiplier,
-      wager,
-      winAmount,
+      spinId: `${gameId}-${spinIndex}-${Date.now()}`,
+      seed: rngSeed,
+      reels: outcome.reels,
+      winBreakdown: {
+        paylineWins: outcome.winLines.length > 0 && outcome.winLines[0] === 1 ? [{
+          lineNumber: 1,
+          symbols: outcome.reels.map(r => r[1]),
+          matchCount: 5,
+          winAmount: outcome.winAmount,
+          multiplier: outcome.multiplier,
+        }] : [],
+        scatterWins: outcome.winLines.includes(0) ? [{
+          scatterCount: outcome.reels.flat().filter(s => s === 'scatter').length,
+          winAmount: outcome.winAmount * 0.5, // Estimate
+          triggersFeature: outcome.featureTrigger !== null,
+        }] : [],
+        baseWin: outcome.winAmount,
+        featureWin: 0,
+        totalWin: outcome.winAmount,
+      },
+      featureTrigger: outcome.featureTrigger,
+      totalWin: outcome.winAmount,
+      multiplier: outcome.multiplier,
       timestamp: new Date().toISOString(),
+      gameId,
+      wager,
     };
 
+    // Log spin (atomic operation)
     const { error: spinError } = await supabase
       .from('demo_spins')
       .insert({
@@ -270,13 +361,12 @@ serve(async (req) => {
         spin_index: spinIndex,
         wager,
         outcome_json: outcomeJson,
-        win_amount: winAmount,
+        win_amount: outcome.winAmount,
         rng_seed: rngSeed,
       });
 
     if (spinError) {
       console.error('Spin logging error:', spinError);
-      // Don't fail the spin, but log the error
     }
 
     // Update session balance
@@ -290,18 +380,20 @@ serve(async (req) => {
     }
 
     const responseTime = Date.now() - startTime;
-    console.log(`Demo spin completed in ${responseTime}ms - Game: ${gameId}, Wager: ${wager}, Win: ${winAmount}`);
+    console.log(`[DEMO_SPIN] Spin ${spinIndex} completed in ${responseTime}ms - Game: ${gameId}, Wager: ${wager}, Win: ${outcome.winAmount}`);
 
+    // Return authoritative outcome
     return new Response(JSON.stringify({
       success: true,
       sessionId: currentSession.id,
       spinIndex,
-      reels,
-      winAmount,
-      winLines,
-      multiplier,
+      outcome: outcomeJson, // Complete authoritative outcome
+      reels: outcome.reels, // For backward compatibility
+      winAmount: outcome.winAmount,
+      winLines: outcome.winLines,
+      multiplier: outcome.multiplier,
       newBalance,
-      isDemo: true, // Always true - this is demo only
+      isDemo: true,
       disclaimer: 'This is a DEMO simulation using test credits only. No real money involved.',
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

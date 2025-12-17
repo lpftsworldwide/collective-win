@@ -88,12 +88,18 @@ export const Footer = () => {
               </li>
               <li>
                 <a 
-                  href="https://www.gamblinghelponline.org.au" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                  href="tel:0800654655" 
                   className="text-turquoise hover:text-turquoise-light transition-colors"
                 >
-                  Gambling Help Online
+                  Gambling Helpline NZ: 0800 654 655
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="tel:0800664262" 
+                  className="text-turquoise hover:text-turquoise-light transition-colors"
+                >
+                  Problem Gambling Foundation: 0800 664 262
                 </a>
               </li>
             </ul>
@@ -140,12 +146,16 @@ export const Footer = () => {
           </div>
 
           <p className="text-xs text-muted-foreground text-center max-w-3xl mx-auto leading-relaxed font-crimson">
-            Please gamble responsibly. This platform is intended for entertainment purposes only.
-            If you feel you have a gambling problem, please seek help immediately. 
-            <a href="https://www.gamblinghelponline.org.au" target="_blank" rel="noopener noreferrer" className="text-premium-gold hover:underline ml-1">
-              Gambling Help Online
+            <strong className="text-amber-400">18+ | Play Responsibly</strong> • Compulsive gaming is when a person risks something in a hope to get something bigger in return. 
+            Gambling addiction is the urge to continue betting no matter what impact the losses have on one's life. 
+            This platform is intended for entertainment purposes only. If you feel you have a gambling problem, please seek help immediately. 
+            <a href="tel:0800654655" className="text-premium-gold hover:underline ml-1">
+              Gambling Helpline NZ: 0800 654 655
             </a>
-            {" "}| Call 1800 858 858 for support.
+            {" "}|{" "}
+            <a href="tel:0800664262" className="text-premium-gold hover:underline">
+              Problem Gambling Foundation: 0800 664 262
+            </a>
           </p>
 
           {/* Egyptian decoration */}

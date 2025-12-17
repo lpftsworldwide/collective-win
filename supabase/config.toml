@@ -1,4 +1,7 @@
-project_id = "xwcyukfbfzfsjesgdxfk"
+# COLLECTIVE-WINS Supabase Project
+# Project ID: yiorietrtfosjnpzznnr
+# This is a SEPARATE project from lpfts.com - completely isolated
+project_id = "yiorietrtfosjnpzznnr"
 
 [functions.spin-outcome]
 verify_jwt = true

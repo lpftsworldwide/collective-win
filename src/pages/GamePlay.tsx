@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { gameLibrary } from "@/data/gameLibrary";
 import { Button } from "@/components/ui/button";
@@ -8,14 +8,13 @@ import { ArrowLeft, Minus, Plus, AlertTriangle, RefreshCw } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-// Symbol data structure with stable IDs
-interface ReelSymbol {
-  id: string;
-  symbol: string;
-  reelIndex: number;
-  position: number;
-}
+import { LicensedGameIframe } from "@/components/LicensedGameIframe";
+import { useLicensedGames } from "@/hooks/useLicensedGames";
+import type { GameProviderCode } from "@/integrations/game-providers/types";
+import { useSlotMachineFSM } from "@/hooks/useSlotMachineFSM";
+import { SlotReels } from "@/components/SlotReels";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
+import type { SpinOutcome } from "@/types/SpinOutcome";
 
 // Symbol emoji mapping for demo visualization
 const SYMBOL_MAP: Record<string, string> = {
@@ -30,36 +29,29 @@ const GamePlay = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { data: licensedGames } = useLicensedGames();
   
-  const game = gameLibrary.find(g => g.GameID === gameId);
+  // Check if this is a licensed game
+  const licensedGame = licensedGames?.find(g => g.game_code === gameId);
+  const demoGame = gameLibrary.find(g => g.GameID === gameId);
   
-  // Demo-specific state
-  const [demoBalance, setDemoBalance] = useState(10000); // Starting demo credits
+  const [showLicensedGame, setShowLicensedGame] = useState(false);
+  const [providerCode, setProviderCode] = useState<GameProviderCode | null>(null);
+  
+  // FSM for slot machine state management
+  const fsm = useSlotMachineFSM();
+  
+  // Demo-specific state (only used if not licensed game)
+  const [demoBalance, setDemoBalance] = useState(10000);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [betAmount, setBetAmount] = useState(1);
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [lastWin, setLastWin] = useState<number>(0);
   const [spinCount, setSpinCount] = useState(0);
   
-  // Store reel data with stable IDs
-  const [reelData, setReelData] = useState<ReelSymbol[][]>(() => {
-    const initialReels: ReelSymbol[][] = [];
-    const initialSymbols = ['low1', 'low2', 'low3', 'high3', 'high2'];
-    
-    for (let reelIdx = 0; reelIdx < 5; reelIdx++) {
-      const reel: ReelSymbol[] = [];
-      for (let pos = 0; pos < 3; pos++) {
-        reel.push({
-          id: `reel-${reelIdx}-pos-${pos}-init`,
-          symbol: initialSymbols[(reelIdx + pos) % initialSymbols.length],
-          reelIndex: reelIdx,
-          position: pos
-        });
-      }
-      initialReels.push(reel);
-    }
-    return initialReels;
-  });
+  // Store previous outcome for sound comparison
+  const previousOutcomeRef = useRef<SpinOutcome | null>(null);
+  
+  // Sound effects (outcome-driven)
+  const { playFromOutcome } = useSoundEffects();
 
   // Redirect to auth if not logged in
   useEffect(() => {
@@ -68,18 +60,52 @@ const GamePlay = () => {
     }
   }, [user, navigate]);
 
+  // Load licensed game if available
+  useEffect(() => {
+    if (licensedGame && licensedGame.provider) {
+      const providerCodeMap: Record<string, GameProviderCode> = {
+        'JILI': 'jili',
+        'Boomberg': 'boomberg',
+        'Pragmatic Play': 'pragmatic',
+        'NetEnt': 'netent',
+        'Evolution Gaming': 'evolution',
+        'Playson': 'playson',
+        'BGaming': 'bgaming',
+        'Hacksaw Gaming': 'hacksaw',
+      };
+      
+      const code = providerCodeMap[licensedGame.provider.name] || 'demo';
+      setProviderCode(code as GameProviderCode);
+      
+      // Auto-launch licensed game
+      if (licensedGame.status === 'active' && code !== 'demo') {
+        setShowLicensedGame(true);
+      }
+    }
+  }, [licensedGame]);
+
+  // Play sounds when outcome changes
+  useEffect(() => {
+    if (fsm.outcome) {
+      playFromOutcome(fsm.outcome, previousOutcomeRef.current);
+      previousOutcomeRef.current = fsm.outcome;
+    }
+  }, [fsm.outcome, playFromOutcome]);
+  
   // Reset demo balance function
   const resetDemoBalance = () => {
     setDemoBalance(10000);
     setSessionId(null);
     setSpinCount(0);
+    fsm.reset();
+    previousOutcomeRef.current = null;
     toast({
       title: "Demo Credits Reset",
       description: "Your demo balance has been reset to 10,000 credits.",
     });
   };
 
-  if (!game) {
+  if (!demoGame && !licensedGame) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -90,7 +116,48 @@ const GamePlay = () => {
     );
   }
 
+  // Show licensed game iframe
+  if (showLicensedGame && providerCode && licensedGame) {
+    return (
+      <LicensedGameIframe
+        gameCode={licensedGame.game_code}
+        providerCode={providerCode}
+        onClose={() => {
+          setShowLicensedGame(false);
+          navigate("/");
+        }}
+        onBalanceUpdate={(balance) => {
+          // Update user balance display
+          console.log('Balance updated:', balance);
+        }}
+      />
+    );
+  }
+
+  // Use licensed game data if available, otherwise fall back to demo game
+  const game = licensedGame ? {
+    GameTitle: licensedGame.name,
+    GameID: licensedGame.game_code,
+    Provider: licensedGame.provider?.name || 'Unknown',
+    RTP: licensedGame.rtp_certified?.toString() || '96.0',
+    Volatility: (licensedGame.volatility || 'Medium') as "Low" | "Medium" | "High",
+    GameType: licensedGame.category === 'slots' ? 'Slot' : 
+              licensedGame.category === 'live' ? 'Live' :
+              licensedGame.category === 'table' ? 'Table' : 'Slot',
+    UI_ShortDescription: licensedGame.name,
+    UI_RulesModal: {
+      Mechanics: 'Play the real licensed game with certified RTP and RNG.',
+      PayoutStructure: `RTP: ${licensedGame.rtp_certified || 96.0}%`
+    }
+  } : demoGame!;
+
   const handleSpin = async () => {
+    // FSM: Only accept input in IDLE state
+    if (!fsm.canAcceptInput) {
+      console.warn('[FSM] Spin request ignored - not in IDLE state');
+      return;
+    }
+    
     if (betAmount > demoBalance) {
       toast({
         title: "Insufficient Demo Credits",
@@ -100,10 +167,15 @@ const GamePlay = () => {
       return;
     }
 
-    setIsSpinning(true);
-    setLastWin(0);
+    // FSM: Request spin
+    if (!fsm.requestSpin()) {
+      return;
+    }
 
     try {
+      // FSM: Start spinning
+      fsm.startSpinning();
+      
       // Call demo-spin edge function (server-side RNG)
       const { data, error } = await supabase.functions.invoke('demo-spin', {
         body: {
@@ -120,64 +192,76 @@ const GamePlay = () => {
         setSessionId(data.sessionId);
       }
 
-      // Animate reels spinning
+      // Parse authoritative outcome from response
+      let outcome: SpinOutcome;
+      if (data.outcome) {
+        // New format: complete outcome object
+        outcome = data.outcome;
+      } else {
+        // Legacy format: construct outcome from separate fields
+        outcome = {
+          spinId: `${gameId}-${data.spinIndex}-${Date.now()}`,
+          seed: data.rng_seed || `${sessionId}-${data.spinIndex}`,
+          reels: data.reels,
+          winBreakdown: {
+            paylineWins: [],
+            scatterWins: [],
+            baseWin: data.winAmount || 0,
+            featureWin: 0,
+            totalWin: data.winAmount || 0,
+          },
+          featureTrigger: null,
+          totalWin: data.winAmount || 0,
+          multiplier: data.multiplier || 0,
+          timestamp: new Date().toISOString(),
+          gameId: gameId || '',
+          wager: betAmount,
+        };
+      }
+
+      // Wait for animation duration
       const spinDuration = 1500;
-      let animationFrame = 0;
-      const animationInterval = setInterval(() => {
-        animationFrame++;
-        if (animationFrame % 2 === 0) {
-          setReelData(prev => prev.map((reel) => {
-            const rotated = [...reel];
-            const last = rotated.pop()!;
-            rotated.unshift(last);
-            return rotated;
-          }));
-        }
-      }, 100);
-
-      // Stop after duration and show server result
       setTimeout(() => {
-        clearInterval(animationInterval);
+        // FSM: Stop reels with outcome
+        fsm.stopReels(outcome);
         
-        // Set final reel positions from server
-        if (data.reels) {
-          const finalReels: ReelSymbol[][] = data.reels.map((reel: string[], reelIdx: number) => 
-            reel.map((symbol: string, pos: number) => ({
-              id: `result-${reelIdx}-${pos}-${data.spinIndex}`,
-              symbol: symbol,
-              reelIndex: reelIdx,
-              position: pos
-            }))
-          );
-          setReelData(finalReels);
-        }
-
+        // FSM: Evaluate
+        fsm.evaluate();
+        
+        // FSM: Start paying (or feature intro)
+        fsm.startPaying();
+        
+        // Update balance and state
         setDemoBalance(data.newBalance);
-        setLastWin(data.winAmount);
         setSpinCount(data.spinIndex || spinCount + 1);
-        setIsSpinning(false);
-
-        if (data.winAmount > 0) {
+        
+        // Show win toast
+        if (outcome.totalWin > 0) {
           toast({
             title: "Demo Win! 🎉",
-            description: `You won ${data.winAmount.toFixed(2)} demo credits!`,
+            description: `You won ${outcome.totalWin.toFixed(2)} demo credits!`,
           });
         }
-
+        
+        // FSM: Complete payment after delay
+        setTimeout(() => {
+          fsm.completePayment();
+        }, 2000);
+        
         console.log('[Demo Spin]', {
+          spinId: outcome.spinId,
           spinIndex: data.spinIndex,
           wager: betAmount,
-          winAmount: data.winAmount,
+          winAmount: outcome.totalWin,
           newBalance: data.newBalance,
-          isDemo: data.isDemo,
+          featureTrigger: outcome.featureTrigger,
         });
       }, spinDuration);
 
     } catch (error: any) {
       console.error('Demo spin error:', error);
-      setIsSpinning(false);
+      fsm.reset(); // Reset FSM on error
       
-      // Handle insufficient balance with reset option
       if (error.message?.includes('Insufficient')) {
         toast({
           title: "Out of Demo Credits",
@@ -194,6 +278,61 @@ const GamePlay = () => {
     }
   };
 
+  // Show play button for licensed games
+  if (licensedGame && !showLicensedGame) {
+    return (
+      <div className="min-h-screen bg-background relative">
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(280_45%_10%/0.5),transparent_70%)]" />
+        </div>
+
+        <header className="border-b border-border/50 bg-gaming-dark/95 backdrop-blur-sm sticky top-0 z-40 relative">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/")}
+                className="text-premium-gold hover:text-premium-gold-light"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <div className="text-center">
+                <h1 className="text-lg font-bold text-premium-gold">{game.GameTitle}</h1>
+                <p className="text-xs text-muted-foreground">Licensed Game</p>
+              </div>
+              <div className="w-20" /> {/* Spacer */}
+            </div>
+          </div>
+        </header>
+
+        <main className="container mx-auto px-4 py-8 max-w-4xl relative">
+          <Card className="bg-gaming-card/90 border-premium-gold/30 p-8 backdrop-blur-sm">
+            <div className="text-center space-y-6">
+              <div className="text-6xl mb-4">🎰</div>
+              <h2 className="text-2xl font-bold text-premium-gold">{game.GameTitle}</h2>
+              <p className="text-muted-foreground">
+                {game.Provider} • RTP: {game.RTP}% • {game.Volatility} Volatility
+              </p>
+              <Button
+                onClick={() => setShowLicensedGame(true)}
+                className="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:opacity-90 text-lg py-6 px-12 font-bold text-black"
+                size="lg"
+              >
+                Launch Game
+              </Button>
+              <p className="text-sm text-muted-foreground mt-4">
+                This is a real licensed game with certified RTP and RNG
+              </p>
+            </div>
+          </Card>
+        </main>
+      </div>
+    );
+  }
+
+  // Demo game UI (existing code)
   return (
     <div className="min-h-screen bg-background relative">
       {/* Mystical background */}
@@ -259,31 +398,31 @@ const GamePlay = () => {
         <Card className="bg-gaming-card/90 border-premium-gold/30 p-6 backdrop-blur-sm shadow-[0_0_40px_hsl(42_80%_55%/0.15)]">
           {/* Slot Machine */}
           <div className="bg-gradient-to-br from-gaming-dark via-mystic-purple/10 to-background rounded-xl p-8 mb-6 border border-border/50">
-            <div className="grid grid-cols-5 gap-4 mb-6">
-              {reelData.map((reel, reelIndex) => (
-                <div 
-                  key={`reel-${reelIndex}`} 
-                  className="bg-gaming-dark/70 rounded-lg p-4 border-2 border-premium-gold/30 shadow-inner"
-                >
-                  <div className={`flex flex-col items-center gap-2 ${isSpinning ? 'animate-pulse' : ''}`}>
-                    {reel.map((symbolData) => (
-                      <div 
-                        key={symbolData.id}
-                        className="text-4xl transition-transform"
-                      >
-                        {SYMBOL_MAP[symbolData.symbol] || '❓'}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            {/* Outcome-driven reels */}
+            <SlotReels
+              state={fsm.state}
+              outcome={fsm.outcome}
+              symbolMap={SYMBOL_MAP}
+              reels={5}
+              rows={3}
+            />
 
-            {/* Win Display */}
-            {lastWin > 0 && (
+            {/* Win Display - derived from outcome */}
+            {fsm.outcome && fsm.outcome.totalWin > 0 && (
               <div className="text-center mb-4">
                 <p className="text-3xl font-bold text-amber-400 animate-bounce inline-block px-6 py-2 rounded-lg bg-gaming-dark/50">
-                  DEMO WIN: {lastWin.toFixed(2)} XP
+                  DEMO WIN: {fsm.outcome.totalWin.toFixed(2)} XP
+                </p>
+              </div>
+            )}
+            
+            {/* Feature Trigger Display */}
+            {fsm.outcome?.featureTrigger && (
+              <div className="text-center mb-4">
+                <p className="text-xl font-bold text-premium-gold animate-pulse">
+                  {fsm.outcome.featureTrigger.type === 'free_spins' && '🎁 FREE SPINS TRIGGERED!'}
+                  {fsm.outcome.featureTrigger.type === 'hold_and_win' && '🔥 HOLD AND WIN!'}
+                  {fsm.outcome.featureTrigger.type === 'multiplier' && '⚡ MULTIPLIER ACTIVATED!'}
                 </p>
               </div>
             )}
@@ -296,7 +435,7 @@ const GamePlay = () => {
                 variant="outline"
                 size="icon"
                 onClick={() => setBetAmount(Math.max(1, betAmount - 1))}
-                disabled={isSpinning}
+                disabled={!fsm.canAcceptInput}
                 className="border-premium-gold/30 hover:bg-premium-gold/10"
               >
                 <Minus className="w-4 h-4" />
@@ -309,7 +448,7 @@ const GamePlay = () => {
                 variant="outline"
                 size="icon"
                 onClick={() => setBetAmount(Math.min(100, betAmount + 1))}
-                disabled={isSpinning}
+                disabled={!fsm.canAcceptInput}
                 className="border-premium-gold/30 hover:bg-premium-gold/10"
               >
                 <Plus className="w-4 h-4" />
@@ -318,10 +457,10 @@ const GamePlay = () => {
 
             <Button
               onClick={handleSpin}
-              disabled={isSpinning || betAmount > demoBalance}
+              disabled={!fsm.canAcceptInput || betAmount > demoBalance}
               className="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:opacity-90 text-lg py-6 font-bold text-black"
             >
-              {isSpinning ? "SPINNING..." : "DEMO SPIN"}
+              {fsm.isSpinning ? "SPINNING..." : "DEMO SPIN"}
             </Button>
 
             {/* Quick Bet Buttons */}
@@ -332,7 +471,7 @@ const GamePlay = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => setBetAmount(amount)}
-                  disabled={isSpinning}
+                  disabled={!fsm.canAcceptInput}
                   className="border-muted-foreground/30 text-muted-foreground hover:bg-muted/10"
                 >
                   {amount} XP

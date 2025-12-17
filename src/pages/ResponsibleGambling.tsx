@@ -424,30 +424,187 @@ const ResponsibleGambling = () => {
           </Card>
         </div>
 
-        {/* Help Resources */}
+        {/* Comprehensive Information Section */}
         <Card className="mt-6 bg-gaming-card border-border">
           <CardHeader>
-            <CardTitle className="text-premium-gold">Need Help?</CardTitle>
+            <CardTitle className="text-premium-gold">Understanding Gambling Addiction</CardTitle>
             <CardDescription>
-              If you're struggling with gambling, help is available
+              Compulsive gaming is when a person risks something in a hope to get something bigger in return. 
+              Gambling addiction is the urge to continue betting no matter what impact the losses have on one's life. 
+              In 2012 the American Psychiatric Association has officially recognized this addiction similar to drug consumption and alcoholism.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Causes */}
+            <div>
+              <h3 className="text-lg font-bold text-premium-gold mb-3">What are gambling addiction causes?</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                We still don't know the exact cause of gambling addiction because in most cases it is a mixture of several of them. 
+                However, there are irrefutable links between mental health, social life, and background.
+              </p>
+              <div className="space-y-3">
+                <div className="p-3 rounded-lg bg-background/50">
+                  <h4 className="font-semibold text-foreground mb-2">Biological factors</h4>
+                  <p className="text-sm text-muted-foreground">
+                    One of the main causes of compulsive gambling is of biological nature because some of the aspects are similar 
+                    to the ones that cause other types of addictions. Brain imaging witnesses that gambling win produces a response 
+                    that is similar to the one of cocaine or an alcohol addict. Serotonin and norepinephrine deficiencies, chemicals 
+                    that are responsible for stress, wellbeing, and happiness, are also related to compulsive actions.
+                  </p>
+                </div>
+                <div className="p-3 rounded-lg bg-background/50">
+                  <h4 className="font-semibold text-foreground mb-2">Free Access To The Games</h4>
+                  <p className="text-sm text-muted-foreground">
+                    It is rather easy to find a gambling site nearby or to play a few games online. There is no need to go to an 
+                    offline casino to make a few bets: everything is available within a few clicks. Availability and accessibility 
+                    of these games make it rather difficult to control the gambling market and to prevent potential addicts from playing.
+                  </p>
+                </div>
+                <div className="p-3 rounded-lg bg-background/50">
+                  <h4 className="font-semibold text-foreground mb-2">Personality factors</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Another factor that may influence the development of gambling addiction is the personality one. The personality 
+                    factor includes treats of the character like being impulsive, easily bored or restless. Even superstitions may 
+                    influence the choices a player makes in an online casino.
+                  </p>
+                </div>
+                <div className="p-3 rounded-lg bg-background/50">
+                  <h4 className="font-semibold text-foreground mb-2">Society</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Latest researches show that people, who have problems in personal life or at home are more likely to develop 
+                    a gambling addiction compared to those who are satisfied with their life. Relationships play a crucial role in 
+                    acquiring wrong gambling habits: if your relatives or friends have problems with betting the chances that you 
+                    will also have them are rather high.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Signs and Symptoms */}
+            <div>
+              <h3 className="text-lg font-bold text-premium-gold mb-3">Signs And Symptoms Of Gambling Addiction</h3>
+              <div className="grid gap-2 md:grid-cols-2">
+                {[
+                  "Neglecting other life aspects",
+                  "Keeping this activity in secret",
+                  "Making money only via gambling",
+                  "Borrowing money to spin the wheel",
+                  "Thinking that 'gambling is the only pleasure in life'",
+                  "Occupying mind only with online casino games",
+                  "Being able to steal something to get money for gambling",
+                  "Needing to play a game just to feel the thrill",
+                  "Failed attempts to control or stop playing",
+                  "Feeling irritated or even aggressive when it is impossible to gamble",
+                  "Losing opportunities or relationships because of gambling",
+                  "'Chasing losses', i.e. trying to get back the money you have lost"
+                ].map((symptom, idx) => (
+                  <div key={idx} className="flex items-start gap-2 p-2 rounded bg-background/30">
+                    <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-muted-foreground">{symptom}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Tips for Safe Gambling */}
+            <div>
+              <h3 className="text-lg font-bold text-premium-gold mb-3">Tips On How To Gamble Online Safely</h3>
+              <div className="space-y-2">
+                {[
+                  "Gambling for fun. It should bring joy, relaxation, and excitement. Avoid negative feelings and anxiety.",
+                  "Bet the sums that you are not afraid to lose. Control your budget and never exceed it.",
+                  "Never play drunk. You may overestimate your abilities and spend more than intended to.",
+                  "Decide in advance how much time you will spend on a game. It is easy to lose the track of time.",
+                  "Stay true to yourself. Keep the promises you have made even if you want to continue gambling.",
+                  "Casinos always benefit. Don't forget that odds are always against players.",
+                  "Stop playing if you win. Once your bet has played, it's necessary to quit the game.",
+                  "Never borrow money for the game. It is the first and one of the most important rules of quality gambling."
+                ].map((tip, idx) => (
+                  <div key={idx} className="flex items-start gap-2 p-2 rounded bg-background/30">
+                    <CheckCircle className="w-4 h-4 text-emerald mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-muted-foreground">{tip}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* New Zealand Help Resources */}
+        <Card className="mt-6 bg-gaming-card border-border">
+          <CardHeader>
+            <CardTitle className="text-premium-gold">Useful Gambling Addiction Resources For New Zealanders</CardTitle>
+            <CardDescription>
+              When none of the above methods work and you feel that the situation is out of your control, 
+              it is better to reach professional support.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <a
-                href="https://www.gamblinghelponline.org.au"
+                href="tel:0800654655"
+                className="flex items-center gap-3 p-4 rounded-lg bg-background/50 hover:bg-background/70 transition-colors"
+              >
+                <Shield className="w-5 h-5 text-emerald" />
+                <div>
+                  <p className="font-medium">Gambling Helpline</p>
+                  <p className="text-xs text-muted-foreground">0800 654 655 - National free-to-phone service</p>
+                </div>
+              </a>
+              <a
+                href="tel:0800654655"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 p-4 rounded-lg bg-background/50 hover:bg-background/70 transition-colors"
               >
                 <ExternalLink className="w-5 h-5 text-premium-gold" />
                 <div>
-                  <p className="font-medium">Gambling Help Online</p>
-                  <p className="text-xs text-muted-foreground">24/7 support & counselling</p>
+                  <p className="font-medium">ChoiceNotChance</p>
+                  <p className="text-xs text-muted-foreground">0800 654 655 - Comprehensive information on online gambling</p>
                 </div>
               </a>
               <a
-                href="https://www.gamblersanonymous.org.au"
+                href="tel:0800664262"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-4 rounded-lg bg-background/50 hover:bg-background/70 transition-colors"
+              >
+                <ExternalLink className="w-5 h-5 text-premium-gold" />
+                <div>
+                  <p className="font-medium">Problem Gambling Foundation (PGF)</p>
+                  <p className="text-xs text-muted-foreground">0800 664 262 - Support groups and meetings</p>
+                </div>
+              </a>
+              <a
+                href="tel:0800862342"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-4 rounded-lg bg-background/50 hover:bg-background/70 transition-colors"
+              >
+                <ExternalLink className="w-5 h-5 text-premium-gold" />
+                <div>
+                  <p className="font-medium">Asian Family Services</p>
+                  <p className="text-xs text-muted-foreground">0800 862 342 - For Asian gamblers in New Zealand</p>
+                </div>
+              </a>
+              <a
+                href="https://www.salvationarmy.org.nz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-4 rounded-lg bg-background/50 hover:bg-background/70 transition-colors"
+              >
+                <ExternalLink className="w-5 h-5 text-premium-gold" />
+                <div>
+                  <p className="font-medium">The Salvation Army Oasis Centers</p>
+                  <p className="text-xs text-muted-foreground">+64 4 802 6269 - Social, educational, and legal support</p>
+                </div>
+              </a>
+              <a
+                href="https://www.gamblersanonymous.org"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 p-4 rounded-lg bg-background/50 hover:bg-background/70 transition-colors"
@@ -455,29 +612,7 @@ const ResponsibleGambling = () => {
                 <ExternalLink className="w-5 h-5 text-premium-gold" />
                 <div>
                   <p className="font-medium">Gamblers Anonymous</p>
-                  <p className="text-xs text-muted-foreground">Free support groups</p>
-                </div>
-              </a>
-              <a
-                href="tel:1800858858"
-                className="flex items-center gap-3 p-4 rounded-lg bg-background/50 hover:bg-background/70 transition-colors"
-              >
-                <Shield className="w-5 h-5 text-emerald" />
-                <div>
-                  <p className="font-medium">1800 858 858</p>
-                  <p className="text-xs text-muted-foreground">Gambling Helpline (Free Call)</p>
-                </div>
-              </a>
-              <a
-                href="https://www.lifeline.org.au"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 p-4 rounded-lg bg-background/50 hover:bg-background/70 transition-colors"
-              >
-                <ExternalLink className="w-5 h-5 text-premium-gold" />
-                <div>
-                  <p className="font-medium">Lifeline Australia</p>
-                  <p className="text-xs text-muted-foreground">13 11 14 - Crisis support</p>
+                  <p className="text-xs text-muted-foreground">12-step program - Free support groups worldwide</p>
                 </div>
               </a>
             </div>
