@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { gameLibrary, type Game } from "@/data/gameLibrary";
 
 export interface LicensedGame {
   id: string;
@@ -79,9 +80,57 @@ export function useLicensedGames(filters?: {
 
       const { data, error } = await query;
 
-      if (error) {
-        console.error('Error fetching licensed games:', error);
-        throw error;
+      // If database query fails or returns empty, fallback to gameLibrary
+      if (error || !data || data.length === 0) {
+        console.warn('Database query failed or empty, falling back to gameLibrary:', error);
+        
+        // Convert gameLibrary to LicensedGame format
+        const fallbackGames: LicensedGame[] = gameLibrary.map((game: Game) => {
+          // Map GameType to category
+          const categoryMap: Record<string, string> = {
+            'Slot': 'slots',
+            'Live': 'live',
+            'Table': 'table',
+            'Crash': 'crash'
+          };
+          
+          return {
+            id: game.GameID,
+            game_code: game.GameID,
+            name: game.GameTitle,
+            category: categoryMap[game.GameType] || 'slots',
+            rtp_certified: parseFloat(game.RTP.replace('%', '')),
+            volatility: game.Volatility.toLowerCase(),
+            status: 'active' as const,
+            thumbnail_url: null,
+            min_bet_aud: 0.20,
+            max_bet_aud: 1000.00,
+            is_demo_available: true,
+            provider: {
+              id: 'collective-wins',
+              name: game.Provider,
+              code: game.Provider.toLowerCase().replace(/\s+/g, '-'),
+              status: 'active',
+              rng_certification: 'Provably Fair System',
+              license_info: 'Collective Wins Custom Game'
+            }
+          };
+        });
+        
+        // Apply filters to fallback games
+        let filtered = fallbackGames;
+        if (filters?.category && filters.category !== 'all') {
+          filtered = filtered.filter(g => g.category === filters.category);
+        }
+        if (filters?.provider && filters.provider !== 'all') {
+          filtered = filtered.filter(g => g.provider?.name === filters.provider);
+        }
+        if (filters?.search) {
+          const searchLower = filters.search.toLowerCase();
+          filtered = filtered.filter(g => g.name.toLowerCase().includes(searchLower));
+        }
+        
+        return filtered;
       }
 
       // Transform the data to match the expected structure
@@ -112,8 +161,42 @@ export function useGameProviders() {
         .order('name', { ascending: true });
 
       if (error) {
-        console.error('Error fetching game providers:', error);
-        throw error;
+        console.warn('Error fetching game providers, using fallback:', error);
+        // Fallback: return unique providers from gameLibrary
+        const providers = new Map<string, GameProvider>();
+        gameLibrary.forEach(game => {
+          if (!providers.has(game.Provider)) {
+            providers.set(game.Provider, {
+              id: game.Provider.toLowerCase().replace(/\s+/g, '-'),
+              name: game.Provider,
+              code: game.Provider.toLowerCase().replace(/\s+/g, '-'),
+              status: 'active',
+              rng_certification: 'Provably Fair System',
+              license_info: 'Collective Wins Custom Game',
+              license_jurisdiction: 'Internal RNG'
+            });
+          }
+        });
+        return Array.from(providers.values());
+      }
+
+      // If data is empty, use fallback
+      if (!data || data.length === 0) {
+        const providers = new Map<string, GameProvider>();
+        gameLibrary.forEach(game => {
+          if (!providers.has(game.Provider)) {
+            providers.set(game.Provider, {
+              id: game.Provider.toLowerCase().replace(/\s+/g, '-'),
+              name: game.Provider,
+              code: game.Provider.toLowerCase().replace(/\s+/g, '-'),
+              status: 'active',
+              rng_certification: 'Provably Fair System',
+              license_info: 'Collective Wins Custom Game',
+              license_jurisdiction: 'Internal RNG'
+            });
+          }
+        });
+        return Array.from(providers.values());
       }
 
       return data as GameProvider[];

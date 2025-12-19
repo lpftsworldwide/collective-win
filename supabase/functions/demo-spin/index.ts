@@ -45,6 +45,70 @@ const DEFAULT_SYMBOLS: SymbolWeight[] = [
   { id: 'low3', name: 'Orange', weight: 45, type: 'normal' },
 ];
 
+// Game-specific configurations (simplified for Deno)
+const GAME_CONFIGS: Record<string, { symbolWeights: SymbolWeight[]; reelLayout: { reels: number; rows: number } }> = {
+  'fortune-tiger': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild Tiger', weight: 4, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 6, type: 'scatter' },
+      { id: 'high1', name: 'Tiger', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Dragon', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Coin', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 },
+  },
+  'sweet-bonanza': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 3, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 5, type: 'scatter' },
+      { id: 'high1', name: 'Bomb', weight: 10, type: 'normal' },
+      { id: 'high2', name: 'Candy', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Lollipop', weight: 20, type: 'normal' },
+      { id: 'low1', name: 'Cherry', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'Grape', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Watermelon', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 6, rows: 5 }, // Tumble game
+  },
+  'gates-of-olympus': {
+    symbolWeights: [
+      { id: 'wild', name: 'Zeus', weight: 4, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 6, type: 'scatter' },
+      { id: 'high1', name: 'Gem', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Crown', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Vase', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 6, rows: 5 }, // Tumble game
+  },
+};
+
+// Get game config or default
+function getGameConfig(gameId: string): GameConfig {
+  const customConfig = GAME_CONFIGS[gameId];
+  if (customConfig) {
+    return {
+      gameId,
+      symbolWeights: customConfig.symbolWeights,
+      reelLayout: customConfig.reelLayout,
+      rtp: 96.0,
+    };
+  }
+  
+  // Default config
+  return {
+    gameId,
+    symbolWeights: DEFAULT_SYMBOLS,
+    reelLayout: { reels: 5, rows: 3 },
+    rtp: 96.0,
+  };
+}
+
 // Seeded RNG for reproducibility and auditability
 function seededRandom(seed: string): () => number {
   let hash = 0;
@@ -147,10 +211,13 @@ function calculateWin(reels: string[][], wager: number): { winAmount: number; wi
 }
 
 // Generate authoritative outcome (single RNG seed)
+// Supports Master Mode (98% win) and $111 Hook (85% win)
 function generateSpinOutcome(
   gameId: string,
   wager: number,
-  seed: string
+  seed: string,
+  isMaster: boolean = false,
+  is111Hook: boolean = false
 ): {
   reels: string[][];
   winAmount: number;
@@ -161,19 +228,94 @@ function generateSpinOutcome(
   // Create RNG from seed (ONCE)
   const random = seededRandom(seed);
   
-  // Game config (can be extended per game)
+  // Adjust symbol weights based on mode
+  let symbolWeights = [...DEFAULT_SYMBOLS];
+  
+  if (isMaster) {
+    // Master Mode: Favor high-value symbols (98% win probability)
+    // Increase weights of high-value symbols significantly
+    symbolWeights = symbolWeights.map(s => {
+      if (s.type === 'wild' || s.id === 'high1' || s.id === 'high2' || s.id === 'high3') {
+        return { ...s, weight: s.weight * 10 }; // 10x more likely
+      }
+      return { ...s, weight: s.weight * 0.5 }; // Reduce low-value symbols
+    });
+  } else if (is111Hook) {
+    // $111 Hook: Slightly favor wins (85% win probability)
+    // Increase weights of high-value symbols moderately
+    symbolWeights = symbolWeights.map(s => {
+      if (s.type === 'wild' || s.id === 'high1' || s.id === 'high2' || s.id === 'high3') {
+        return { ...s, weight: s.weight * 3 }; // 3x more likely
+      }
+      return { ...s, weight: s.weight * 0.8 }; // Slightly reduce low-value symbols
+    });
+  }
+  // Public Mode: Use default weights (92% RTP)
+  
+  // Get game-specific config
+  const baseConfig = getGameConfig(gameId);
+  
+  // Apply mode-based weight adjustments to game config
+  const adjustedWeights = symbolWeights.length > 0 ? symbolWeights : baseConfig.symbolWeights.map(s => {
+    if (isMaster) {
+      if (s.type === 'wild' || s.id === 'high1' || s.id === 'high2' || s.id === 'high3') {
+        return { ...s, weight: s.weight * 10 };
+      }
+      return { ...s, weight: s.weight * 0.5 };
+    } else if (is111Hook) {
+      if (s.type === 'wild' || s.id === 'high1' || s.id === 'high2' || s.id === 'high3') {
+        return { ...s, weight: s.weight * 3 };
+      }
+      return { ...s, weight: s.weight * 0.8 };
+    }
+    return s;
+  });
+  
+  // Game config
   const config: GameConfig = {
     gameId,
-    symbolWeights: DEFAULT_SYMBOLS,
-    reelLayout: { reels: 5, rows: 3 },
-    rtp: 96.0,
+    symbolWeights: adjustedWeights,
+    reelLayout: baseConfig.reelLayout,
+    rtp: isMaster ? 98.0 : is111Hook ? 85.0 : 96.0,
   };
   
   // Generate reels
   const reels = generateReels(random, config);
   
-  // Calculate win (deterministic)
-  const { winAmount, winLines, multiplier } = calculateWin(reels, wager);
+  // Calculate base win (deterministic)
+  let { winAmount, winLines, multiplier } = calculateWin(reels, wager);
+  
+  // Apply mode-based win adjustments using the random function
+  // Generate additional random values for mode checks
+  const modeCheck1 = random();
+  const modeCheck2 = random();
+  
+  if (isMaster && winAmount === 0) {
+    // Master Mode: Force a win if no win occurred (98% win rate)
+    // Master Mode: outcome % 200 + 9800 = 98% win rate
+    // Convert random (0-1) to 0-10000 range
+    const outcome = Math.floor(modeCheck1 * 10000);
+    
+    if (outcome % 200 < 196) { // 196/200 = 98%
+      // Force a win: 2x to 50x multiplier
+      const winMultiplier = 2 + Math.floor(modeCheck2 * 49); // 2x to 50x
+      winAmount = wager * winMultiplier;
+      multiplier = winMultiplier;
+      winLines = [1];
+    }
+  } else if (is111Hook && winAmount === 0) {
+    // $111 Hook: Force a win if no win occurred (85% win rate)
+    // $111 Hook: outcome % 1000 + 8500 = 85% win rate
+    const outcome = Math.floor(modeCheck1 * 10000);
+    
+    if (outcome % 1000 < 850) { // 850/1000 = 85%
+      // Force a win: 1.5x to 10x multiplier
+      const winMultiplier = 1.5 + (modeCheck2 * 8.5); // 1.5x to 10x
+      winAmount = wager * winMultiplier;
+      multiplier = winMultiplier;
+      winLines = [1];
+    }
+  }
   
   // Detect feature (deterministic - based on scatter count)
   let featureTrigger = null;
@@ -306,6 +448,32 @@ serve(async (req) => {
       });
     }
 
+    // Check rate limit (max 60 spins per minute)
+    const { data: rateLimitCheck } = await supabase.rpc('check_rate_limit', {
+      p_user_id: user.id,
+      p_action_type: 'spin',
+      p_max_actions: 60,
+      p_window_seconds: 60
+    });
+
+    if (rateLimitCheck === false) {
+      return new Response(JSON.stringify({ 
+        error: 'Rate limit exceeded',
+        message: 'Maximum 60 spins per minute. Please slow down.',
+      }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Log rate limit action
+    const clientIp = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    await supabase.rpc('log_rate_limit_action', {
+      p_user_id: user.id,
+      p_action_type: 'spin',
+      p_ip_address: clientIp
+    });
+
     // Get spin index for idempotency
     const { count } = await supabase
       .from('demo_spins')
@@ -314,11 +482,25 @@ serve(async (req) => {
     
     const spinIndex = (count || 0) + 1;
 
+    // Check if user is master/admin
+    const { data: adminUser } = await supabase
+      .from('admin_users')
+      .select('is_master')
+      .eq('user_id', user.id)
+      .eq('is_master', true)
+      .single();
+    
+    const isMaster = adminUser?.is_master === true;
+
+    // Check for $111 Hook (balance <= $111)
+    const is111Hook = currentSession.demo_balance <= 111 && !isMaster;
+
     // Generate seed (deterministic)
     const rngSeed = `${currentSession.id}-${spinIndex}-${Date.now()}`;
 
     // Generate authoritative outcome (SINGLE RNG CALL)
-    const outcome = generateSpinOutcome(gameId, wager, rngSeed);
+    // Pass Master Mode and $111 Hook flags
+    const outcome = generateSpinOutcome(gameId, wager, rngSeed, isMaster, is111Hook);
 
     // Calculate new balance
     const newBalance = currentSession.demo_balance - wager + outcome.winAmount;

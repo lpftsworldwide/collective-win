@@ -65,49 +65,60 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Check if user has already claimed bonus
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('is_bonus_claimed, bonus_balance, total_balance_aud')
-      .eq('id', user.id)
+    // Check if user has already claimed sign-up bonus
+    const { data: existingBonus, error: bonusCheckError } = await supabase
+      .from('user_bonuses')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('bonus_type', 'sign_up')
+      .in('status', ['active', 'claimed'])
       .single();
 
-    if (userError) {
-      console.error('User lookup failed:', userError);
+    if (bonusCheckError && bonusCheckError.code !== 'PGRST116') { // PGRST116 = no rows returned
+      console.error('Bonus check failed:', bonusCheckError);
       return new Response(
-        JSON.stringify({ error: 'User not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Failed to check bonus status' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    if (userData.is_bonus_claimed) {
+    if (existingBonus) {
       return new Response(
         JSON.stringify({ 
           error: 'Bonus already claimed',
-          message: 'You have already claimed your welcome bonus'
+          message: 'You have already claimed your $111 welcome bonus',
+          bonus_id: existingBonus.id,
+          status: existingBonus.status
         }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // ATOMIC OPERATION: Credit bonus and mark as claimed
-    const { error: updateError } = await supabase
-      .from('users')
-      .update({
-        bonus_balance: WELCOME_BONUS_AMOUNT,
-        is_bonus_claimed: true,
+    // Create $111 sign-up bonus
+    const { data: newBonus, error: bonusError } = await supabase
+      .from('user_bonuses')
+      .insert({
+        user_id: user.id,
+        bonus_type: 'sign_up',
+        bonus_amount: WELCOME_BONUS_AMOUNT,
+        currency: 'AUD',
+        status: 'active',
+        wagering_requirement: 0.00, // No wagering for demo credits
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
+        claimed_at: new Date().toISOString()
       })
-      .eq('id', user.id);
+      .select()
+      .single();
 
-    if (updateError) {
-      console.error('Bonus credit failed:', updateError);
+    if (bonusError || !newBonus) {
+      console.error('Bonus creation failed:', bonusError);
       return new Response(
-        JSON.stringify({ error: 'Failed to credit bonus' }),
+        JSON.stringify({ error: 'Failed to create bonus' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Record bonus transaction for audit trail
+    // Record bonus transaction for audit trail (if transactions table exists)
     const { error: txError } = await supabase
       .from('transactions')
       .insert({
@@ -115,24 +126,26 @@ Deno.serve(async (req) => {
         type: 'bonus',
         amount: WELCOME_BONUS_AMOUNT,
         status: 'completed',
+      }).catch(() => {
+        // Ignore if transactions table doesn't exist
+        return { error: null };
       });
 
     if (txError) {
-      console.error('Transaction recording failed:', txError);
-      // Don't fail the request - bonus was already credited
+      console.warn('Transaction recording failed (non-critical):', txError);
     }
 
     // Log successful bonus claim
-    console.log(`Welcome bonus claimed: User ${user.id}, Amount ${WELCOME_BONUS_AMOUNT} AUD`);
+    console.log(`$111 Welcome bonus claimed: User ${user.id}, Bonus ID ${newBonus.id}`);
 
     return new Response(
       JSON.stringify({
         success: true,
+        bonus_id: newBonus.id,
         bonus_amount: WELCOME_BONUS_AMOUNT,
-        wagering_requirement: BONUS_WAGERING_REQUIREMENT,
-        new_bonus_balance: WELCOME_BONUS_AMOUNT,
-        total_balance: userData.total_balance_aud,
-        message: `Welcome bonus of $${WELCOME_BONUS_AMOUNT} AUD credited! Subject to ${BONUS_WAGERING_REQUIREMENT}x wagering requirement.`
+        wagering_requirement: 0.00, // No wagering for demo
+        expires_at: newBonus.expires_at,
+        message: `Welcome bonus of $${WELCOME_BONUS_AMOUNT} AUD credited! Minimum $30 buy-in required after bonus. Cannot withdraw until Silver tier.`
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

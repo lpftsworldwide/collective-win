@@ -2,7 +2,7 @@ import { useCallback, useRef, useEffect } from "react";
 import { useSound } from "@/contexts/SoundContext";
 import type { SpinOutcome } from "@/types/SpinOutcome";
 
-type SoundType = "bigWin" | "deposit" | "spin" | "click" | "bonus";
+type SoundType = "bigWin" | "deposit" | "spin" | "click" | "bonus" | "reelStop" | "win" | "tumble" | "anticipation";
 
 export const useSoundEffects = () => {
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -121,7 +121,73 @@ export const useSoundEffects = () => {
     });
   }, [playTone, isMuted]);
 
-  const play = useCallback((type: SoundType) => {
+  const playReelStop = useCallback(() => {
+    if (isMuted) return;
+    // Thud sound when reel stops
+    playTone(200, 0.1, "square", 0.15);
+    setTimeout(() => playTone(150, 0.08, "square", 0.1), 50);
+  }, [playTone, isMuted]);
+
+  const playWin = useCallback((amount: number, wager: number) => {
+    if (isMuted) return;
+    
+    // Small win: single tone
+    // Medium win: two tones
+    // Big win: already handled by playBigWin
+    const ratio = amount / wager;
+    
+    if (ratio < 2) {
+      // Small win
+      playTone(600, 0.15, "sine", 0.2);
+    } else if (ratio < 10) {
+      // Medium win
+      playTone(600, 0.15, "sine", 0.2);
+      setTimeout(() => playTone(800, 0.15, "sine", 0.2), 100);
+    } else {
+      // Big win - use playBigWin
+      playBigWin();
+    }
+  }, [playTone, playBigWin, isMuted]);
+
+  const playTumble = useCallback((tumbleCount: number) => {
+    if (isMuted) return;
+    
+    // Cascading win sound - ascending tones
+    const baseFreq = 400 + (tumbleCount * 50);
+    playTone(baseFreq, 0.2, "triangle", 0.2);
+    setTimeout(() => playTone(baseFreq * 1.2, 0.15, "triangle", 0.15), 100);
+  }, [playTone, isMuted]);
+
+  const playAnticipation = useCallback(() => {
+    if (isMuted) return;
+    
+    // Heartbeat with rising pitch (3 seconds)
+    const ctx = getAudioContext();
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.type = "sine";
+    // Start at 220Hz, rise to 880Hz over 3 seconds
+    oscillator.frequency.setValueAtTime(220, ctx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 3);
+
+    // Pulsing gain for heartbeat effect
+    const pulseInterval = 0.5; // 0.5 seconds per beat
+    for (let i = 0; i < 6; i++) {
+      const startTime = ctx.currentTime + (i * pulseInterval);
+      gainNode.gain.setValueAtTime(0.1, startTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.3, startTime + 0.1);
+      gainNode.gain.exponentialRampToValueAtTime(0.1, startTime + 0.2);
+    }
+
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 3);
+  }, [getAudioContext, isMuted]);
+
+  const play = useCallback((type: SoundType, ...args: any[]) => {
     if (isMuted) return;
     
     try {
@@ -141,11 +207,23 @@ export const useSoundEffects = () => {
         case "bonus":
           playBonus();
           break;
+        case "reelStop":
+          playReelStop();
+          break;
+        case "win":
+          playWin(args[0] || 0, args[1] || 1);
+          break;
+        case "tumble":
+          playTumble(args[0] || 1);
+          break;
+        case "anticipation":
+          playAnticipation();
+          break;
       }
     } catch (error) {
       console.warn("Audio playback failed:", error);
     }
-  }, [isMuted, playBigWin, playDeposit, playSpin, playClick, playBonus]);
+  }, [isMuted, playBigWin, playDeposit, playSpin, playClick, playBonus, playReelStop, playWin, playTumble, playAnticipation]);
 
   /**
    * Play sounds based on outcome
@@ -186,5 +264,12 @@ export const useSoundEffects = () => {
     }
   }, [isMuted, playSpin, playBigWin, playBonus, playClick, play]);
 
-  return { play, playFromOutcome };
+  return { 
+    play, 
+    playFromOutcome,
+    playReelStop,
+    playWin,
+    playTumble,
+    playAnticipation
+  };
 };
