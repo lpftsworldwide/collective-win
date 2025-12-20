@@ -8,9 +8,8 @@ import { ArrowLeft, Minus, Plus, AlertTriangle, Coins, Shield } from "lucide-rea
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { LicensedGameIframe } from "@/components/LicensedGameIframe";
 import { useLicensedGames } from "@/hooks/useLicensedGames";
-import type { GameProviderCode } from "@/integrations/game-providers/types";
+// Removed LicensedGameIframe - ALL GAMES USE LOCAL ENGINE
 import { useSlotMachineFSM } from "@/hooks/useSlotMachineFSM";
 import { SlotReels } from "@/components/SlotReels";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
@@ -35,8 +34,7 @@ const GamePlay = () => {
   const licensedGame = licensedGames?.find(g => g.game_code === gameId);
   const fallbackGame = gameLibrary.find(g => g.GameID === gameId);
   
-  const [showLicensedGame, setShowLicensedGame] = useState(false);
-  const [providerCode, setProviderCode] = useState<GameProviderCode | null>(null);
+  // ALL GAMES USE LOCAL ENGINE - No provider needed
   
   // FSM for slot machine state management
   const fsm = useSlotMachineFSM();
@@ -98,12 +96,17 @@ const GamePlay = () => {
   }, [user, navigate]);
 
   // ALL GAMES USE LOCAL ENGINE - No external providers needed!
-  // Skip provider check and use local slot machine engine
+  // Ensure we have a game to play
   useEffect(() => {
-    // Always use local engine for all games
-    setShowLicensedGame(false);
-    setProviderCode(null);
-  }, [licensedGame]);
+    if (!licensedGame && !fallbackGame) {
+      toast({
+        title: "Game Not Found",
+        description: "This game is not available. Returning to game catalog.",
+        variant: "destructive",
+      });
+      setTimeout(() => navigate("/"), 2000);
+    }
+  }, [licensedGame, fallbackGame, navigate, toast]);
 
   // Play sounds when outcome changes
   useEffect(() => {
