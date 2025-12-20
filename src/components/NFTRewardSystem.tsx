@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Crown, Sparkles, Gift, Trophy, Star, Zap, Image as ImageIcon } from "lucide-react";
+import { Crown, Sparkles, Gift, Trophy, Star, Zap, Image as ImageIcon, Lock } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
