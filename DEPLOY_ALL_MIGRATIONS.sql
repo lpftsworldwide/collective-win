@@ -8,6 +8,71 @@
 -- MIGRATION 0: CREATE CORE TABLES FIRST
 -- =====================================================
 
+-- Create public.users table if it doesn't exist (extends auth.users)
+-- This matches the existing migration structure
+CREATE TABLE IF NOT EXISTS public.users (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+  display_name TEXT NOT NULL DEFAULT '',
+  referral_code TEXT UNIQUE,
+  total_balance_aud NUMERIC(12,2) DEFAULT 0.00 NOT NULL,
+  bonus_balance NUMERIC(12,2) DEFAULT 0.00 NOT NULL,
+  is_kyc_verified BOOLEAN DEFAULT false NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Enable RLS on users table
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for users table
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.users;
+CREATE POLICY "Users can view their own profile"
+  ON public.users FOR SELECT
+  USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.users;
+CREATE POLICY "Users can update their own profile"
+  ON public.users FOR UPDATE
+  USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.users;
+CREATE POLICY "Users can insert their own profile"
+  ON public.users FOR INSERT
+  WITH CHECK (auth.uid() = id);
+
+-- Create trigger function to auto-create public.users when auth.users is created
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  generated_referral_code TEXT;
+BEGIN
+  -- Generate a unique 8-character referral code
+  generated_referral_code := UPPER(SUBSTRING(MD5(RANDOM()::TEXT) FROM 1 FOR 8));
+  
+  -- Insert into users table
+  INSERT INTO public.users (id, display_name, referral_code, total_balance_aud, bonus_balance)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.email, 'User'),
+    generated_referral_code,
+    0.00,
+    0.00
+  );
+  RETURN NEW;
+END;
+$$;
+
+-- Create trigger to execute function on user creation
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_new_user();
+
 -- Create game_providers table if it doesn't exist
 CREATE TABLE IF NOT EXISTS public.game_providers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -153,6 +218,7 @@ BEGIN
     min_bet_aud = EXCLUDED.min_bet_aud,
     max_bet_aud = EXCLUDED.max_bet_aud,
     is_demo_available = false, -- Real money only
+    updated_at = now();
     updated_at = now();
 END $$;
 
