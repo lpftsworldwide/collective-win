@@ -1,104 +1,131 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Eye } from "lucide-react";
+import { Sparkles, Eye, RefreshCw, Users } from "lucide-react";
 import { useCelebration } from "@/hooks/useCelebration";
-
-const TAROT_DECK = [
-  { name: 'The Magician', meaning: 'Creation and Manifestation', symbol: '⚡', color: 'from-purple-600 to-indigo-800' },
-  { name: 'The High Priestess', meaning: 'Intuition and Mystery', symbol: '🌙', color: 'from-blue-600 to-purple-800' },
-  { name: 'The Sun', meaning: 'Success and Vitality', symbol: '☀️', color: 'from-yellow-500 to-orange-600' },
-  { name: 'The Moon', meaning: 'Illusion and Intuition', symbol: '🌙', color: 'from-slate-600 to-blue-800' },
-  { name: 'The Star', meaning: 'Hope and Inspiration', symbol: '⭐', color: 'from-cyan-500 to-blue-600' },
-  { name: 'The Tower', meaning: 'Sudden Change', symbol: '⚡', color: 'from-red-600 to-orange-700' },
-  { name: 'The World', meaning: 'Completion and Fulfillment', symbol: '🌍', color: 'from-emerald-600 to-teal-700' },
-  { name: 'The Fool', meaning: 'New Beginnings', symbol: '🎭', color: 'from-yellow-400 to-amber-500' },
-  { name: 'The Hermit', meaning: 'Inner Guidance', symbol: '🕯️', color: 'from-gray-600 to-slate-700' },
-  { name: 'The Wheel of Fortune', meaning: 'Cycles and Change', symbol: '🎡', color: 'from-purple-500 to-pink-600' },
-  { name: 'The Lovers', meaning: 'Unity and Choice', symbol: '💑', color: 'from-pink-500 to-rose-600' },
-  { name: 'The Chariot', meaning: 'Willpower and Control', symbol: '🏛️', color: 'from-blue-500 to-cyan-600' },
-  { name: 'Strength', meaning: 'Courage and Patience', symbol: '🦁', color: 'from-orange-500 to-red-600' },
-  { name: 'The Hanged Man', meaning: 'Surrender and Letting Go', symbol: '🙏', color: 'from-indigo-600 to-purple-700' },
-  { name: 'Death', meaning: 'Transformation', symbol: '💀', color: 'from-gray-700 to-black' },
-  { name: 'Temperance', meaning: 'Balance and Moderation', symbol: '⚖️', color: 'from-teal-500 to-cyan-600' },
-  { name: 'The Devil', meaning: 'Bondage and Materialism', symbol: '😈', color: 'from-red-700 to-black' },
-  { name: 'The Empress', meaning: 'Abundance and Nature', symbol: '👑', color: 'from-green-500 to-emerald-600' },
-  { name: 'The Emperor', meaning: 'Authority and Structure', symbol: '🏛️', color: 'from-amber-600 to-orange-700' },
-  { name: 'The Hierophant', meaning: 'Tradition and Conformity', symbol: '📿', color: 'from-blue-600 to-indigo-700' },
-  { name: 'Justice', meaning: 'Fairness and Truth', symbol: '⚖️', color: 'from-yellow-600 to-amber-700' },
-  { name: 'The Star', meaning: 'Hope and Guidance', symbol: '✨', color: 'from-cyan-400 to-blue-500' },
-];
+import { getCollectiveDailyReading, FULL_TAROT_DECK } from "@/data/tarotDeck";
+import { Badge } from "@/components/ui/badge";
 
 export const DailyTarotCard = () => {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [card, setCard] = useState<typeof TAROT_DECK[0] | null>(null);
+  const [reading, setReading] = useState<ReturnType<typeof getCollectiveDailyReading> | null>(null);
   const [hasFlippedToday, setHasFlippedToday] = useState(false);
+  const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
   const { triggerBigWin } = useCelebration();
 
+  // Update reading every 10 hours (collective reading)
   useEffect(() => {
-    // Check if user has flipped today
-    const lastFlip = localStorage.getItem('lastTarotFlip');
-    const today = new Date().toDateString();
-    
-    if (lastFlip === today) {
-      setHasFlippedToday(true);
-      // Load the card they saw today
-      const savedCard = localStorage.getItem('todayTarotCard');
-      if (savedCard) {
-        try {
-          setCard(JSON.parse(savedCard));
-          setIsFlipped(true);
-        } catch (e) {
-          console.error('Error parsing saved card:', e);
-        }
+    const updateReading = () => {
+      const newReading = getCollectiveDailyReading();
+      setReading(newReading);
+      setLastUpdateTime(new Date());
+      
+      // Check if user has already seen today's reading
+      const lastFlip = localStorage.getItem('lastTarotFlip');
+      const today = new Date().toDateString();
+      if (lastFlip === today) {
+        setHasFlippedToday(true);
+        setIsFlipped(true);
+      } else {
+        setHasFlippedToday(false);
+        setIsFlipped(false);
       }
-    } else {
-      // New day - reset flip state
-      setHasFlippedToday(false);
-      setIsFlipped(false);
-      setCard(null);
-    }
+    };
+
+    // Initial load
+    updateReading();
+
+    // Update every 10 hours (36000000 ms)
+    const interval = setInterval(updateReading, 10 * 60 * 60 * 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleFlip = () => {
     if (hasFlippedToday || isFlipped) return;
 
-    // Select card based on day (deterministic)
-    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
-    const selectedCard = TAROT_DECK[dayOfYear % TAROT_DECK.length];
-    
-    setCard(selectedCard);
-    setIsFlipped(true);
-    
-    // Save to localStorage
-    localStorage.setItem('lastTarotFlip', new Date().toDateString());
-    localStorage.setItem('todayTarotCard', JSON.stringify(selectedCard));
-    
-    // Trigger celebration
-    triggerBigWin();
+    if (reading) {
+      setIsFlipped(true);
+      
+      // Save to localStorage
+      localStorage.setItem('lastTarotFlip', new Date().toDateString());
+      localStorage.setItem('todayTarotCard', JSON.stringify(reading));
+      
+      // Trigger celebration
+      triggerBigWin();
+    }
+  };
+
+  const getCardCategoryColor = (category: string) => {
+    switch (category) {
+      case 'major': return 'from-purple-600 to-indigo-800';
+      case 'wands': return 'from-orange-500 to-red-600';
+      case 'cups': return 'from-blue-400 to-cyan-600';
+      case 'swords': return 'from-gray-400 to-slate-600';
+      case 'pentacles': return 'from-amber-500 to-yellow-600';
+      default: return 'from-premium-gold/20 to-ancient-bronze/20';
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px]">
+    <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+      {/* Collective Reading Header */}
+      <div className="text-center mb-4">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Users className="w-5 h-5 text-premium-gold" />
+          <span className="text-sm text-premium-gold font-cinzel">Collective Reading</span>
+        </div>
+        {lastUpdateTime && (
+          <p className="text-xs text-muted-foreground">
+            Updates every 10 hours • Last: {lastUpdateTime.toLocaleTimeString()}
+          </p>
+        )}
+      </div>
+
       {!isFlipped ? (
         <Card 
-          className="w-full max-w-sm aspect-[2/3] bg-gradient-to-br from-premium-gold/20 to-ancient-bronze/20 border-2 border-premium-gold/50 cursor-pointer hover:scale-105 transition-transform tarot-card"
+          className="w-full max-w-sm aspect-[2/3] bg-gradient-to-br from-premium-gold/20 to-ancient-bronze/20 border-2 border-premium-gold/50 cursor-pointer hover:scale-105 transition-transform tarot-card relative"
           onClick={handleFlip}
         >
           <CardContent className="h-full flex items-center justify-center p-6">
             <div className="text-center">
               <Eye className="w-16 h-16 text-premium-gold/50 mx-auto mb-4" />
               <p className="text-premium-gold font-cinzel text-xl mb-2">Tap to Reveal</p>
-              <p className="text-muted-foreground text-sm">Your daily prophecy awaits</p>
+              <p className="text-muted-foreground text-sm mb-2">The Collective's Daily Prophecy</p>
+              <p className="text-muted-foreground text-xs">Same card for all • Updates every 10 hours</p>
             </div>
           </CardContent>
         </Card>
-      ) : card ? (
-        <Card className={`w-full max-w-sm aspect-[2/3] bg-gradient-to-br ${card.color} border-2 border-premium-gold/50 tarot-card`}>
+      ) : reading ? (
+        <Card className={`w-full max-w-sm aspect-[2/3] bg-gradient-to-br ${getCardCategoryColor(reading.card.category)} border-2 border-premium-gold/50 tarot-card relative`}>
           <CardContent className="h-full flex flex-col items-center justify-center p-6 text-center">
-            <div className="text-6xl mb-4">{card.symbol}</div>
-            <h3 className="text-2xl font-cinzel font-bold text-white mb-2">{card.name}</h3>
-            <p className="text-white/90 text-sm">{card.meaning}</p>
+            {/* Reversed indicator */}
+            {reading.reversed && (
+              <Badge className="absolute top-2 right-2 bg-red-600/80 text-white text-xs rotate-12">
+                REVERSED
+              </Badge>
+            )}
+            
+            {/* Card category badge */}
+            <Badge className="absolute top-2 left-2 bg-black/40 text-white text-xs capitalize">
+              {reading.card.category}
+            </Badge>
+
+            <div className="text-6xl mb-4">{reading.card.symbol}</div>
+            <h3 className="text-2xl font-cinzel font-bold text-white mb-2">
+              {reading.card.name}
+            </h3>
+            <p className="text-white/90 text-sm mb-4 leading-relaxed">
+              {reading.reversed ? reading.card.reversed || reading.card.meaning : reading.card.meaning}
+            </p>
+            
+            {/* Collective message */}
+            <div className="mt-auto pt-4 border-t border-white/20 w-full">
+              <p className="text-xs text-white/70 italic mb-2">
+                {reading.message}
+              </p>
+            </div>
+
             <div className="mt-4 flex items-center gap-2 text-premium-gold">
               <Sparkles className="w-4 h-4" />
               <span className="text-xs">Spiritual XP +10</span>
@@ -106,7 +133,16 @@ export const DailyTarotCard = () => {
           </CardContent>
         </Card>
       ) : null}
+
+      {/* Info about collective reading */}
+      {isFlipped && reading && (
+        <div className="text-center max-w-sm">
+          <p className="text-xs text-muted-foreground">
+            This is the Collective's shared reading. Everyone sees the same card, 
+            which updates every 10 hours based on cosmic timing.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
-
