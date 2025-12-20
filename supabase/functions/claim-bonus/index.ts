@@ -9,13 +9,26 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
 const WELCOME_BONUS_AMOUNT = 111.00;
 const BONUS_WAGERING_REQUIREMENT = 35; // 35x playthrough
+
+// CORS: Restrict to production domain for security
+const allowedOrigins = [
+  'https://collective-win.vercel.app',
+  'https://collective-win-git-main-lpftss-projects.vercel.app',
+  'http://localhost:5173', // Local development
+  'http://localhost:3000', // Local development
+];
+
+const getCorsHeaders = (origin: string | null) => {
+  const isAllowed = origin && allowedOrigins.some(allowed => origin.startsWith(allowed));
+  return {
+    'Access-Control-Allow-Origin': isAllowed ? origin! : allowedOrigins[0],
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Max-Age': '86400',
+  };
+};
 
 Deno.serve(async (req) => {
   const origin = req.headers.get('Origin');

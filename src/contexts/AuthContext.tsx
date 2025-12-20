@@ -20,8 +20,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log("Auth state changed:", event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
+        
+        // Handle email confirmation
+        if (event === "SIGNED_IN" && session) {
+          // User just confirmed email or logged in
+          console.log("User signed in:", session.user.email);
+        }
+        
+        // Handle token refresh
+        if (event === "TOKEN_REFRESHED" && session) {
+          console.log("Token refreshed");
+        }
       }
     );
 
@@ -29,10 +41,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      // Handle email confirmation from URL hash
+      if (window.location.hash.includes("access_token")) {
+        // Extract tokens from hash
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get("access_token");
+        const refreshToken = hashParams.get("refresh_token");
+        
+        if (accessToken && refreshToken) {
+          supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          }).then(({ data: { session } }) => {
+            if (session) {
+              // Clear hash and redirect
+              window.history.replaceState({}, document.title, window.location.pathname);
+              if (window.location.pathname === "/") {
+                navigate("/");
+              }
+            }
+          });
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const signOut = async () => {
     await supabase.auth.signOut();

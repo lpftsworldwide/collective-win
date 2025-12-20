@@ -291,7 +291,7 @@ const AdminDemoIntegrity = () => {
           <CardContent className="space-y-4 text-sm text-muted-foreground">
             <div>
               <h4 className="font-semibold text-foreground mb-1">API Reachable</h4>
-              <p>Verifies the demo-spin edge function responds to requests within acceptable latency.</p>
+              <p>Verifies the spin edge function responds to requests within acceptable latency.</p>
             </div>
             <div>
               <h4 className="font-semibold text-foreground mb-1">Outcome Returned</h4>

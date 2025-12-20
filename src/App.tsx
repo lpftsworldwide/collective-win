@@ -8,6 +8,7 @@ import { SoundProvider } from "@/contexts/SoundContext";
 import { ResponsibleGamblingBanner } from "@/components/ResponsibleGamblingBanner";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import EmailConfirm from "./pages/EmailConfirm";
 import GamePlay from "./pages/GamePlay";
 import FairPlay from "./pages/FairPlay";
 import KYCVerification from "./pages/KYCVerification";
@@ -39,6 +40,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/auth/confirm" element={<EmailConfirm />} />
             <Route path="/game/:gameId" element={<GamePlay />} />
             <Route path="/fair-play" element={<FairPlay />} />
             <Route path="/kyc" element={<KYCVerification />} />

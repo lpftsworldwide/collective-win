@@ -137,9 +137,10 @@ const Auth = () => {
         referral_code, terms_accepted: termsAccepted 
       });
 
-      const redirectUrl = `${window.location.origin}/`;
+      // Set redirect URL to email confirmation handler
+      const redirectUrl = `${window.location.origin}/auth/confirm`;
 
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -171,31 +172,43 @@ const Auth = () => {
           });
         }
       } else {
-        // Trigger celebration!
-        setShowConfetti(true);
-        setShowBonusCelebration(true);
-        play("bonus"); // Play bonus claim sound
-        
-        toast({
-          title: "🎉 CONGRATULATIONS!",
-          description: "Your $111 bonus is being credited to your account!",
-        });
-        
-        // Auto-claim the welcome bonus after a brief delay for session to establish
-        setTimeout(async () => {
-          try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
+        // Check if email confirmation is required
+        if (data.user && !data.session) {
+          // Email confirmation required
+          toast({
+            title: "📧 Check Your Email!",
+            description: "We've sent you a confirmation email. Click the link to activate your account and claim your $111 bonus!",
+            duration: 10000,
+          });
+          
+          // Show celebration for signup success
+          setShowConfetti(true);
+          play("bonus");
+          
+          // Don't navigate - user needs to confirm email first
+          // They'll be redirected after email confirmation
+        } else if (data.session) {
+          // User is immediately logged in (email confirmation disabled)
+          setShowConfetti(true);
+          setShowBonusCelebration(true);
+          play("bonus");
+          
+          toast({
+            title: "🎉 CONGRATULATIONS!",
+            description: "Your account is created! Claiming your $111 bonus...",
+          });
+          
+          // Auto-claim the welcome bonus
+          setTimeout(async () => {
+            try {
               const response = await supabase.functions.invoke('claim-bonus', {
                 headers: {
-                  Authorization: `Bearer ${session.access_token}`,
+                  Authorization: `Bearer ${data.session!.access_token}`,
                 },
               });
               
               if (response.error) {
                 console.error('Bonus claim failed:', response.error);
-                // Don't show error to user - bonus will be claimable later
-                // The function might not be deployed yet
                 if (!response.error.message?.includes('404') && !response.error.message?.includes('not found')) {
                   toast({
                     title: "Bonus Claim",
@@ -210,14 +223,14 @@ const Auth = () => {
                   description: `$${response.data?.bonus_amount || 111} welcome bonus credited!`,
                 });
               }
+            } catch (err) {
+              console.error('Error claiming bonus:', err);
             }
-          } catch (err) {
-            console.error('Error claiming bonus:', err);
-          }
-          
-          // Navigate to home
-          navigate("/");
-        }, 2000);
+            
+            // Navigate to home
+            navigate("/");
+          }, 2000);
+        }
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
