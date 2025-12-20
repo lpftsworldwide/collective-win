@@ -26,7 +26,9 @@ import {
   Users,
   TrendingDown,
   Volume2,
-  VolumeX
+  VolumeX,
+  Gem,
+  ShoppingBag
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserBalanceDisplay } from "@/components/UserBalanceDisplay";
@@ -39,18 +41,20 @@ export const MobileNav = () => {
   const { user, signOut } = useAuth();
   const { isMuted, toggleMute } = useSound();
 
-  const navItems = [
-    { label: "Home", icon: Home, path: "/" },
-    { label: "Deposit", icon: Wallet, path: "/deposit" },
-    { label: "Withdraw", icon: TrendingDown, path: "/withdraw" },
-    { label: "Rewards", icon: Gift, path: "/rewards" },
-    { label: "Raffle", icon: Ticket, path: "/raffle" },
-    { label: "Community", icon: Users, path: "/community" },
-    { label: "VIP Club", icon: Crown, path: "/vip" },
-    { label: "Games", icon: Gamepad2, path: "/#games" },
-    { label: "Fair Play", icon: Shield, path: "/fair-play" },
-    { label: "KYC Verification", icon: FileCheck, path: "/kyc" },
-    { label: "Responsible Gambling", icon: Heart, path: "/responsible-gambling" },
+  const navItems: Array<{ label: string; icon: any; path: string; priority?: "high" | "medium" | "low" }> = [
+    { label: "Home", icon: Home, path: "/", priority: "high" },
+    { label: "Games", icon: Gamepad2, path: "/#games", priority: "high" },
+    { label: "Oracle", icon: ScrollText, path: "/oracle", priority: "high" },
+    { label: "Sanctuary", icon: Sparkles, path: "/sanctuary/stones", priority: "high" },
+    { label: "Community", icon: Users, path: "/community/feed", priority: "high" },
+    { label: "Deposit", icon: Wallet, path: "/deposit", priority: "medium" },
+    { label: "Withdraw", icon: TrendingDown, path: "/withdraw", priority: "medium" },
+    { label: "Rewards", icon: Gift, path: "/rewards", priority: "medium" },
+    { label: "Raffle", icon: Ticket, path: "/raffle", priority: "medium" },
+    { label: "VIP Club", icon: Crown, path: "/vip", priority: "medium" },
+    { label: "Fair Play", icon: Shield, path: "/fair-play", priority: "low" },
+    { label: "KYC Verification", icon: FileCheck, path: "/kyc", priority: "low" },
+    { label: "Responsible Gambling", icon: Heart, path: "/responsible-gambling", priority: "low" },
   ];
 
   const handleNavigate = (path: string) => {
@@ -105,17 +109,72 @@ export const MobileNav = () => {
           <span className="font-medium">{isMuted ? "Unmute Sounds" : "Mute Sounds"}</span>
         </Button>
 
+        {/* Quick Access - High Priority Items */}
+        <div className="mb-4">
+          <p className="text-xs text-premium-gold/60 font-cinzel mb-2 px-2">QUICK ACCESS</p>
+          <div className="grid grid-cols-2 gap-2">
+            {navItems
+              .filter(item => item.priority === "high")
+              .map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <Button
+                    key={item.path}
+                    variant="ghost"
+                    size="sm"
+                    className={`justify-start gap-2 py-3 h-auto ${
+                      isActive 
+                        ? 'bg-premium-gold/20 text-premium-gold border border-premium-gold/50' 
+                        : 'text-foreground hover:text-premium-gold hover:bg-premium-gold/10 border border-premium-gold/20'
+                    }`}
+                    onClick={() => handleNavigate(item.path)}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    <span className="text-xs font-medium">{item.label}</span>
+                  </Button>
+                );
+              })}
+          </div>
+        </div>
+
+        {/* Sanctuary Submenu */}
+        <div className="mb-4">
+          <p className="text-xs text-premium-gold/60 font-cinzel mb-2 px-2">SANCTUARY</p>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="justify-start gap-2 py-3 h-auto text-foreground hover:text-premium-gold hover:bg-premium-gold/10 border border-premium-gold/20"
+              onClick={() => handleNavigate("/sanctuary/stones")}
+            >
+              <Gem className="w-4 h-4" />
+              <span className="text-xs font-medium">Stones</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="justify-start gap-2 py-3 h-auto text-foreground hover:text-premium-gold hover:bg-premium-gold/10 border border-premium-gold/20"
+              onClick={() => handleNavigate("/sanctuary/merch")}
+            >
+              <ShoppingBag className="w-4 h-4" />
+              <span className="text-xs font-medium">Merch</span>
+            </Button>
+          </div>
+        </div>
+
         {/* Egyptian decorative border */}
         <div className="h-1 bg-gradient-to-r from-transparent via-premium-gold to-transparent my-4" />
 
+        {/* All Navigation Items */}
         <nav className="flex flex-col gap-2 mt-4">
+          <p className="text-xs text-premium-gold/60 font-cinzel mb-2 px-2">ALL PAGES</p>
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <Button
                 key={item.path}
                 variant="ghost"
-                className={`w-full justify-start gap-3 py-6 ${
+                className={`w-full justify-start gap-3 py-4 ${
                   isActive 
                     ? 'bg-premium-gold/20 text-premium-gold border-l-2 border-premium-gold' 
                     : 'text-foreground hover:text-premium-gold hover:bg-premium-gold/10'
@@ -123,7 +182,7 @@ export const MobileNav = () => {
                 onClick={() => handleNavigate(item.path)}
               >
                 <item.icon className="w-5 h-5" />
-                <span className="font-medium">{item.label}</span>
+                <span className="font-medium text-sm">{item.label}</span>
               </Button>
             );
           })}

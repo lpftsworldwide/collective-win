@@ -253,6 +253,26 @@ const Index = () => {
           <RTPMarketingBanner />
         </section>
 
+        {/* Oracle Quick Link */}
+        <section className="container mx-auto px-4 py-6">
+          <div className="bg-gradient-to-r from-purple-600/20 to-indigo-800/20 border-2 border-purple-500/50 rounded-xl p-6 text-center">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <Eye className="w-8 h-8 text-purple-300" />
+              <h3 className="text-2xl font-cinzel font-bold text-premium-gold">Visit The Oracle</h3>
+            </div>
+            <p className="text-muted-foreground mb-4 font-crimson">
+              Get your daily tarot reading and solve mystical riddles
+            </p>
+            <Button
+              onClick={() => navigate("/oracle")}
+              className="bg-gradient-to-r from-purple-600 to-indigo-800 hover:opacity-90 font-cinzel font-bold"
+            >
+              <ScrollText className="w-4 h-4 mr-2" />
+              Enter The Oracle
+            </Button>
+          </div>
+        </section>
+
         {/* Tarot Lore Banner */}
         <TarotLoreBanner />
 
