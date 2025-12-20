@@ -318,60 +318,7 @@ const GamePlay = () => {
     }
   };
 
-  // Show play button for licensed games
-  // Use local engine for all games
-  if (licensedGame) {
-    return (
-      <div className="min-h-screen bg-background relative">
-        <div className="fixed inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(280_45%_10%/0.5),transparent_70%)]" />
-        </div>
-
-        <header className="border-b border-border/50 bg-gaming-dark/95 backdrop-blur-sm sticky top-0 z-40 relative">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex items-center justify-between">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/")}
-                className="text-premium-gold hover:text-premium-gold-light"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
-              <div className="text-center">
-                <h1 className="text-lg font-bold text-premium-gold">{game.GameTitle}</h1>
-                <p className="text-xs text-muted-foreground">Licensed Game</p>
-              </div>
-              <div className="w-20" /> {/* Spacer */}
-            </div>
-          </div>
-        </header>
-
-        <main className="container mx-auto px-4 py-8 max-w-4xl relative">
-          <Card className="bg-gaming-card/90 border-premium-gold/30 p-8 backdrop-blur-sm">
-            <div className="text-center space-y-6">
-              <div className="text-6xl mb-4">🎰</div>
-              <h2 className="text-2xl font-bold text-premium-gold">{game.GameTitle}</h2>
-              <p className="text-muted-foreground">
-                {game.Provider} • RTP: {game.RTP}% • {game.Volatility} Volatility
-              </p>
-              <Button
-                onClick={() => setShowLicensedGame(true)}
-                className="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:opacity-90 text-lg py-6 px-12 font-bold text-black"
-                size="lg"
-              >
-                Launch Game
-              </Button>
-              <p className="text-sm text-muted-foreground mt-4">
-                This is a real licensed game with certified RTP and RNG
-              </p>
-            </div>
-          </Card>
-        </main>
-      </div>
-    );
-  }
+  // ALL GAMES USE LOCAL ENGINE - No launch button needed, go straight to slot machine
 
   // Real Money Game UI
   if (userBalance === null) {
