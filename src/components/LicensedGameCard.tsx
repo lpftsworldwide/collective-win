@@ -44,9 +44,8 @@ export const LicensedGameCard = ({ game, onShowInfo }: LicensedGameCardProps) =>
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  const isHot = game.rtp_certified ? game.rtp_certified >= 96.5 : false;
-  const isComingSoon = game.status === 'coming_soon';
-  const isComingSoon = game.status === 'coming_soon';
+    const isHot = game.rtp_certified ? game.rtp_certified >= 96.5 : false;
+    const isComingSoon = game.status === 'coming_soon';
   const providerName = game.provider?.name || 'Provider';
   const providerCode = game.provider?.code || 'collective-wins';
 

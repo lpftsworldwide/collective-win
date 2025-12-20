@@ -172,6 +172,29 @@ const Auth = () => {
           });
         }
       } else {
+        // Add user to onboarding queue for high-volume processing
+        if (data.user) {
+          try {
+            await supabase
+              .from('onboarding_queue')
+              .insert({
+                user_id: data.user.id,
+                email: email,
+                status: 'pending',
+                priority: 1,
+                metadata: {
+                  display_name,
+                  mobile,
+                  date_of_birth,
+                  referral_code: referral_code || null,
+                },
+              });
+          } catch (queueError) {
+            console.error('Failed to add to onboarding queue:', queueError);
+            // Continue anyway - queue is optional for now
+          }
+        }
+
         // Check if email confirmation is required
         if (data.user && !data.session) {
           // Email confirmation required
