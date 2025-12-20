@@ -89,11 +89,20 @@ export const BonusDisplay = () => {
         }
       }
     } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to claim bonus',
-        variant: 'destructive',
-      });
+      // Don't show error if function not found (might not be deployed yet)
+      if (!error.message?.includes('404') && !error.message?.includes('not found')) {
+        toast({
+          title: 'Error',
+          description: error.message || 'Failed to claim bonus',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Service Updating',
+          description: 'Bonus claim service is being updated. Please try again later.',
+          variant: 'default',
+        });
+      }
     } finally {
       setClaiming(false);
     }

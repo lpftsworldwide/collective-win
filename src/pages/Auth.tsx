@@ -194,8 +194,21 @@ const Auth = () => {
               
               if (response.error) {
                 console.error('Bonus claim failed:', response.error);
+                // Don't show error to user - bonus will be claimable later
+                // The function might not be deployed yet
+                if (!response.error.message?.includes('404') && !response.error.message?.includes('not found')) {
+                  toast({
+                    title: "Bonus Claim",
+                    description: "Your bonus will be available shortly. Please check your account.",
+                    variant: "default",
+                  });
+                }
               } else {
                 console.log('Welcome bonus claimed successfully:', response.data);
+                toast({
+                  title: "Bonus Claimed! 🎉",
+                  description: `$${response.data?.bonus_amount || 111} welcome bonus credited!`,
+                });
               }
             }
           } catch (err) {

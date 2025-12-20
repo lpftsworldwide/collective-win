@@ -185,7 +185,25 @@ const GamePlay = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Spin error:', error);
+        // Provide helpful error message
+        if (error.message?.includes('404') || error.message?.includes('not found')) {
+          toast({
+            title: "Function Not Found",
+            description: "Game service is being updated. Please try again in a moment.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Spin Failed",
+            description: error.message || "Unable to process spin. Please try again.",
+            variant: "destructive",
+          });
+        }
+        fsm.reset(); // Reset FSM on error
+        return;
+      }
 
       // Store session ID for continuity
       if (data.sessionId) {
