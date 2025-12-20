@@ -3,8 +3,21 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
 // Support both formats: VITE_SUPABASE_URL and vitesupabaseurl (Vercel lowercase)
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.vitesupabaseurl;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.vitepublishiblekey;
+// Vite only exposes vars starting with VITE_, so we check both possible formats
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL 
+  || import.meta.env.vitesupabaseurl
+  || import.meta.env.VITE_SUPABASEURL
+  || (import.meta.env as any).vite_supabase_url;
+  
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY 
+  || import.meta.env.vitepublishiblekey
+  || import.meta.env.VITE_SUPABASEPUBLISHABLEKEY
+  || (import.meta.env as any).vite_supabase_publishable_key;
+
+// Fallback: Try to get from window if available (for debugging)
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  console.error('Missing Supabase env vars. Available env vars:', Object.keys(import.meta.env).filter(k => k.toLowerCase().includes('supabase')));
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
