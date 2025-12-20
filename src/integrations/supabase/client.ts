@@ -2,8 +2,9 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+// Support both formats: VITE_SUPABASE_URL and vitesupabaseurl (Vercel lowercase)
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.vitesupabaseurl;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.vitepublishiblekey;
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
