@@ -1,10 +1,71 @@
 -- =====================================================
 -- COLLECTIVE-WINS COMPLETE MIGRATION PACKAGE
 -- Run this entire file in Supabase SQL Editor
+-- REAL MONEY GAMES - NO DEMO MODE
 -- =====================================================
 
 -- =====================================================
--- MIGRATION 1: POPULATE CUSTOM GAMES
+-- MIGRATION 0: CREATE CORE TABLES FIRST
+-- =====================================================
+
+-- Create game_providers table if it doesn't exist
+CREATE TABLE IF NOT EXISTS public.game_providers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  code TEXT NOT NULL UNIQUE,
+  status TEXT NOT NULL DEFAULT 'active',
+  license_jurisdiction TEXT,
+  rng_certification TEXT,
+  integration_type TEXT,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+-- Create licensed_games table if it doesn't exist
+CREATE TABLE IF NOT EXISTS public.licensed_games (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  provider_id UUID REFERENCES public.game_providers(id) ON DELETE CASCADE,
+  game_code TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  category TEXT,
+  rtp_certified NUMERIC(5,2),
+  volatility TEXT,
+  status TEXT NOT NULL DEFAULT 'active',
+  min_bet_aud NUMERIC(12,2) NOT NULL DEFAULT 0.20,
+  max_bet_aud NUMERIC(12,2) NOT NULL DEFAULT 1000.00,
+  is_demo_available BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_game_providers_code ON public.game_providers(code);
+CREATE INDEX IF NOT EXISTS idx_licensed_games_game_code ON public.licensed_games(game_code);
+CREATE INDEX IF NOT EXISTS idx_licensed_games_provider_id ON public.licensed_games(provider_id);
+
+-- Create update_updated_at_column function if it doesn't exist
+CREATE OR REPLACE FUNCTION public.update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create has_role function if it doesn't exist (for RLS policies)
+CREATE OR REPLACE FUNCTION public.has_role(user_id UUID, role_name TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+  -- Simple implementation - can be enhanced later
+  RETURN EXISTS (
+    SELECT 1 FROM public.admin_users 
+    WHERE admin_users.user_id = has_role.user_id
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- =====================================================
+-- MIGRATION 1: POPULATE CUSTOM GAMES (REAL MONEY)
 -- =====================================================
 
 -- 1. Add "Collective Wins" as a provider for our custom games
@@ -29,7 +90,7 @@ BEGIN
     provider_id, game_code, name, category, rtp_certified, volatility, status,
     min_bet_aud, max_bet_aud, is_demo_available
   ) VALUES
-    (collective_wins_provider_id, 'big-bass-splash', 'Big Bass Splash', 'slots', 96.71, 'high', 'active', 0.20, 1000.00, true),
+    (collective_wins_provider_id, 'big-bass-splash', 'Big Bass Splash', 'slots', 96.71, 'high', 'active', 0.20, 1000.00, false),
     (collective_wins_provider_id, 'gates-of-olympus', 'Gates of Olympus', 'slots', 96.50, 'high', 'active', 0.20, 1000.00, true),
     (collective_wins_provider_id, 'sweet-bonanza', 'Sweet Bonanza', 'slots', 96.48, 'medium', 'active', 0.20, 1000.00, true),
     (collective_wins_provider_id, 'starlight-princess', 'Starlight Princess 1000', 'slots', 96.55, 'high', 'active', 0.20, 1000.00, true),
@@ -91,7 +152,7 @@ BEGIN
     status = EXCLUDED.status,
     min_bet_aud = EXCLUDED.min_bet_aud,
     max_bet_aud = EXCLUDED.max_bet_aud,
-    is_demo_available = EXCLUDED.is_demo_available,
+    is_demo_available = false, -- Real money only
     updated_at = now();
 END $$;
 
@@ -128,6 +189,40 @@ CREATE TRIGGER update_admin_users_updated_at
 
 CREATE INDEX IF NOT EXISTS idx_admin_users_user_id ON public.admin_users(user_id);
 CREATE INDEX IF NOT EXISTS idx_admin_users_is_master ON public.admin_users(is_master) WHERE is_master = true;
+
+-- =====================================================
+-- MIGRATION 2.5: CREATE GAME SPINS TABLE (REAL MONEY)
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS public.game_spins (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  game_id TEXT NOT NULL,
+  spin_index INTEGER NOT NULL,
+  wager NUMERIC(12,2) NOT NULL,
+  outcome_json JSONB NOT NULL,
+  win_amount NUMERIC(12,2) NOT NULL DEFAULT 0,
+  rng_seed TEXT NOT NULL,
+  balance_before NUMERIC(12,2) NOT NULL,
+  balance_after NUMERIC(12,2) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.game_spins ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view their own spins" ON public.game_spins;
+CREATE POLICY "Users can view their own spins"
+  ON public.game_spins FOR SELECT
+  USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "System can create spins" ON public.game_spins;
+CREATE POLICY "System can create spins"
+  ON public.game_spins FOR INSERT
+  WITH CHECK (true);
+
+CREATE INDEX IF NOT EXISTS idx_game_spins_user_id ON public.game_spins(user_id);
+CREATE INDEX IF NOT EXISTS idx_game_spins_game_id ON public.game_spins(game_id);
+CREATE INDEX IF NOT EXISTS idx_game_spins_created_at ON public.game_spins(created_at);
 
 -- =====================================================
 -- MIGRATION 3: BONUS SYSTEM FOR $111 SIGN-UP BONUS
@@ -202,7 +297,7 @@ BEGIN
     wagering_requirement, expires_at
   ) VALUES (
     new_user_id, 'sign_up', 111.00, 'AUD', 'active',
-    0.00, now() + INTERVAL '30 days'
+    3885.00, now() + INTERVAL '30 days' -- 35x wagering requirement
   )
   RETURNING id INTO bonus_id;
 
@@ -217,8 +312,7 @@ $$;
 CREATE TABLE IF NOT EXISTS public.provably_fair_verification (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-  session_id UUID REFERENCES public.demo_sessions(id) ON DELETE CASCADE,
-  spin_id TEXT NOT NULL,
+  spin_id UUID REFERENCES public.game_spins(id) ON DELETE CASCADE,
   game_id TEXT NOT NULL,
   server_seed TEXT NOT NULL,
   client_seed TEXT,
@@ -246,8 +340,8 @@ CREATE POLICY "Admins can view all verification records"
   USING (public.has_role(auth.uid(), 'admin'));
 
 CREATE INDEX IF NOT EXISTS idx_provably_fair_user_id ON public.provably_fair_verification(user_id);
-CREATE INDEX IF NOT EXISTS idx_provably_fair_session_id ON public.provably_fair_verification(session_id);
-CREATE INDEX IF NOT EXISTS idx_provably_fair_spin_id ON public.provably_fair_verification(spin_id);
+CREATE INDEX IF NOT EXISTS idx_provably_fair_spin_id_ref ON public.provably_fair_verification(spin_id);
+CREATE INDEX IF NOT EXISTS idx_provably_fair_spin_id ON public.provably_fair_verification(spin_id) WHERE spin_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_provably_fair_created_at ON public.provably_fair_verification(created_at);
 
 -- =====================================================

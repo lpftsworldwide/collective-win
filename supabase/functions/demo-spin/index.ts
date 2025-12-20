@@ -1,11 +1,12 @@
 /**
- * DEMO SPIN EDGE FUNCTION
+ * SPIN EDGE FUNCTION - REAL MONEY GAMES
  * 
  * REFACTORED: Uses SlotEngine for deterministic outcomes
  * - Single RNG call per spin
  * - Authoritative SpinOutcome object
- * - No random feature triggers
- * - All features come from outcome
+ * - Real money transactions
+ * - Master Mode (98% win for owners)
+ * - $111 Hook (85% win when balance <= $111)
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -399,49 +400,29 @@ serve(async (req) => {
       });
     }
 
-    // Get or create demo session
-    let currentSession;
+    // Get user's real money balance from users table
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('total_balance_aud')
+      .eq('id', user.id)
+      .single();
     
-    if (sessionId) {
-      const { data: existingSession } = await supabase
-        .from('demo_sessions')
-        .select('*')
-        .eq('id', sessionId)
-        .eq('user_id', user.id)
-        .is('ended_at', null)
-        .single();
-      
-      currentSession = existingSession;
+    if (userError) {
+      console.error('User fetch error:', userError);
+      return new Response(JSON.stringify({ error: 'Failed to fetch user balance' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
     
-    if (!currentSession) {
-      const { data: newSession, error: sessionError } = await supabase
-        .from('demo_sessions')
-        .insert({
-          user_id: user.id,
-          game_id: gameId,
-          demo_balance: 10000,
-        })
-        .select()
-        .single();
-      
-      if (sessionError) {
-        console.error('Session creation error:', sessionError);
-        return new Response(JSON.stringify({ error: 'Failed to create demo session' }), {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-      
-      currentSession = newSession;
-    }
+    const currentBalance = userData?.total_balance_aud || 0;
 
     // Check balance
-    if (currentSession.demo_balance < wager) {
+    if (currentBalance < wager) {
       return new Response(JSON.stringify({ 
-        error: 'Insufficient demo credits',
-        balance: currentSession.demo_balance,
-        canReset: true,
+        error: 'Insufficient balance',
+        balance: currentBalance,
+        required: wager,
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -474,13 +455,8 @@ serve(async (req) => {
       p_ip_address: clientIp
     });
 
-    // Get spin index for idempotency
-    const { count } = await supabase
-      .from('demo_spins')
-      .select('*', { count: 'exact', head: true })
-      .eq('session_id', currentSession.id);
-    
-    const spinIndex = (count || 0) + 1;
+    // Get spin index for idempotency (use user_id + timestamp)
+    const spinIndex = Math.floor(Date.now() / 1000);
 
     // Check if user is master/admin
     const { data: adminUser } = await supabase
@@ -493,17 +469,17 @@ serve(async (req) => {
     const isMaster = adminUser?.is_master === true;
 
     // Check for $111 Hook (balance <= $111)
-    const is111Hook = currentSession.demo_balance <= 111 && !isMaster;
+    const is111Hook = currentBalance <= 111 && !isMaster;
 
     // Generate seed (deterministic)
-    const rngSeed = `${currentSession.id}-${spinIndex}-${Date.now()}`;
+    const rngSeed = `${user.id}-${spinIndex}-${Date.now()}`;
 
     // Generate authoritative outcome (SINGLE RNG CALL)
     // Pass Master Mode and $111 Hook flags
     const outcome = generateSpinOutcome(gameId, wager, rngSeed, isMaster, is111Hook);
 
     // Calculate new balance
-    const newBalance = currentSession.demo_balance - wager + outcome.winAmount;
+    const newBalance = currentBalance - wager + outcome.winAmount;
 
     // Create authoritative outcome object
     const outcomeJson = {
@@ -536,56 +512,81 @@ serve(async (req) => {
     };
 
     // Log spin (atomic operation)
-    const { error: spinError } = await supabase
-      .from('demo_spins')
+    const { data: spinRecord, error: spinError } = await supabase
+      .from('game_spins')
       .insert({
-        session_id: currentSession.id,
+        user_id: user.id,
+        game_id: gameId,
         spin_index: spinIndex,
         wager,
         outcome_json: outcomeJson,
         win_amount: outcome.winAmount,
         rng_seed: rngSeed,
-      });
+        balance_before: currentBalance,
+        balance_after: newBalance,
+      })
+      .select('id')
+      .single();
 
     if (spinError) {
       console.error('Spin logging error:', spinError);
     }
 
-    // Update session balance
+    // Update user balance (atomic operation)
     const { error: updateError } = await supabase
-      .from('demo_sessions')
-      .update({ demo_balance: newBalance })
-      .eq('id', currentSession.id);
+      .from('users')
+      .update({ total_balance_aud: newBalance })
+      .eq('id', user.id);
 
     if (updateError) {
       console.error('Balance update error:', updateError);
+      return new Response(JSON.stringify({ error: 'Failed to update balance' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const responseTime = Date.now() - startTime;
-    console.log(`[DEMO_SPIN] Spin ${spinIndex} completed in ${responseTime}ms - Game: ${gameId}, Wager: ${wager}, Win: ${outcome.winAmount}`);
+    console.log(`[SPIN] Spin ${spinIndex} completed in ${responseTime}ms - Game: ${gameId}, Wager: ${wager}, Win: ${outcome.winAmount}, Balance: ${newBalance}`);
+
+    // Store provably fair verification
+    if (spinRecord?.id) {
+      await supabase
+        .from('provably_fair_verification')
+        .insert({
+          user_id: user.id,
+          spin_id: spinRecord.id,
+          game_id: gameId,
+          server_seed: rngSeed,
+          nonce: spinIndex,
+          outcome_hash: JSON.stringify(outcomeJson),
+          outcome_json: outcomeJson,
+        })
+        .catch(err => console.error('Provably fair logging error:', err));
+    }
 
     // Return authoritative outcome
     return new Response(JSON.stringify({
       success: true,
-      sessionId: currentSession.id,
+      spinId: spinRecord?.id,
       spinIndex,
       outcome: outcomeJson, // Complete authoritative outcome
       reels: outcome.reels, // For backward compatibility
       winAmount: outcome.winAmount,
       winLines: outcome.winLines,
       multiplier: outcome.multiplier,
-      newBalance,
-      isDemo: true,
-      disclaimer: 'This is a DEMO simulation using test credits only. No real money involved.',
+      balance: newBalance,
+      isMaster,
+      is111Hook,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Demo spin error:', error);
+    console.error('Spin error:', error);
     return new Response(JSON.stringify({ 
-      error: 'Demo spin failed',
+      error: 'Spin failed',
       message: errorMessage,
     }), {
       status: 500,
