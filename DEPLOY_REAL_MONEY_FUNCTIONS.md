@@ -1,69 +1,73 @@
 # 💰 DEPLOY REAL MONEY FUNCTIONS
 
-## ⚠️ CRITICAL: Function Names Changed!
+## ✅ ALL DEMO REFERENCES REMOVED!
 
-**OLD (Demo):**
-- `demo-spin` ❌
+The website is now **100% REAL MONEY** (except $111 bonus which is the hook!)
 
-**NEW (Real Money):**
-- `spin` ✅
+## 🚀 DEPLOY THESE FUNCTIONS:
 
-## 🚀 DEPLOYMENT STEPS:
+### Function 1: `spin` (REPLACES `demo-spin`)
 
-### Step 1: Delete Old Demo Function
+**Location:** `supabase/functions/spin/index.ts`
 
+**Deploy Steps:**
 1. Go to: https://supabase.com/dashboard/project/yiorietrtfosjnpzznnr/functions
-2. **Delete** `demo-spin` (if it exists)
-3. **Delete** `claim-function` (wrong name - should be `claim-bonus`)
+2. Delete `demo-spin` function (if exists)
+3. Click "Deploy a new function"
+4. **Function name:** `spin` (EXACTLY - not `demo-spin` or `spin-function`)
+5. Copy code from: `supabase/functions/spin/index.ts`
+6. Paste and deploy
 
-### Step 2: Deploy `spin` Function
+**Verify:** URL should show `/functions/v1/spin` ✅
 
-1. Click "Deploy a new function"
-2. **Function name:** Type exactly `spin` (NOT `demo-spin` or `spin-function`)
-3. **Copy code from:** `supabase/functions/spin/index.ts`
-4. **Paste** into the `index.ts` file
-5. **Deploy**
+### Function 2: `claim-bonus`
 
-### Step 3: Deploy `claim-bonus` Function
+**Location:** `supabase/functions/claim-bonus/index.ts`
 
-1. Click "Deploy a new function"
-2. **Function name:** Type exactly `claim-bonus` (NOT `claim-function` or `claim-bonus-function`)
-3. **Copy code from:** `supabase/functions/claim-bonus/index.ts`
-4. **Paste** into the `index.ts` file
-5. **Deploy**
+**Deploy Steps:**
+1. Delete `claim-function` (if exists - wrong name)
+2. Click "Deploy a new function"
+3. **Function name:** `claim-bonus` (EXACTLY)
+4. Copy code from: `supabase/functions/claim-bonus/index.ts`
+5. Paste and deploy
 
-### Step 4: Verify URLs
+**Verify:** URL should show `/functions/v1/claim-bonus` ✅
 
-After deployment, URLs MUST show:
-- `spin` → `/functions/v1/spin` ✅
-- `claim-bonus` → `/functions/v1/claim-bonus` ✅
+## 💰 REAL MONEY FEATURES:
 
-## 💎 REAL MONEY FEATURES:
+✅ **Real Money Transactions:**
+- All wagers: Real AUD
+- All wins: Real AUD  
+- Balance: Real money
 
-✅ **All balances:** Real AUD from database
-✅ **All wagers:** Real money (AUD)
-✅ **All wins:** Real money payouts (AUD)
-✅ **$111 Bonus:** Real money with 35x wagering requirement
-✅ **No demo mode:** Everything is real money
-✅ **Deposit required:** Users must deposit to play
-
-## 🎯 THE $111 HOOK:
-
-The $111 welcome bonus is the **psychological attraction**:
-- Real money bonus (not demo)
-- Creates excitement and engagement
+✅ **$111 Welcome Bonus:**
+- This is the PSYCHOLOGICAL HOOK
+- Attracts new players
+- Real bonus credits
 - Minimum $30 deposit after bonus
-- 35x wagering requirement
-- Cannot withdraw until Silver tier
 
-**This is what hooks players and gets them playing!**
+✅ **Wager Limits:**
+- Min: $0.20 AUD
+- Max: $1,000 AUD
 
-## ✅ AFTER DEPLOYMENT:
+## 📋 CODE UPDATES:
 
-Your platform will be a **100% REAL MONEY CASINO** with:
-- Real AUD transactions
-- Real money balances
-- Real money bonuses
-- Real money gaming
-- No demo mode anywhere
+**Function Calls Updated:**
+- `demo-spin` → `spin` ✅
+- `claim-bonus` → `claim-bonus` ✅
 
+**UI Updates:**
+- ❌ Removed all demo banners
+- ❌ Removed all demo badges
+- ❌ Removed all "demo" text
+- ✅ Real money language only
+
+## 🎯 AFTER DEPLOYMENT:
+
+Test:
+1. Signup → Should award $111 bonus
+2. Play game → Should use real money
+3. Spin → Should calculate real wins/losses
+4. Balance → Should show real AUD
+
+**NO MORE "DEMO" ANYWHERE!**

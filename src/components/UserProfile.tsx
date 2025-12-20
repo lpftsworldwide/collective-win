@@ -161,7 +161,7 @@ export const UserProfile = () => {
           <ul className="text-sm text-muted-foreground space-y-1">
             {tier.tier === 'bronze' && (
               <>
-                <li>• Access to all demo games</li>
+                <li>• Access to all premium games</li>
                 <li>• $111 welcome bonus</li>
                 <li>• Cannot withdraw (minimum $30 deposit for Silver)</li>
               </>
