@@ -127,22 +127,8 @@ const GamePlay = () => {
   }
 
   // Show licensed game iframe
-  if (showLicensedGame && providerCode && licensedGame) {
-    return (
-      <LicensedGameIframe
-        gameCode={licensedGame.game_code}
-        providerCode={providerCode}
-        onClose={() => {
-          setShowLicensedGame(false);
-          navigate("/");
-        }}
-        onBalanceUpdate={(balance) => {
-          // Update user balance display
-          console.log('Balance updated:', balance);
-        }}
-      />
-    );
-  }
+  // ALL GAMES USE LOCAL ENGINE - No iframe needed!
+  // Games go directly to slot machine below
 
   // Use licensed game data if available, otherwise fall back to game library
   const game = licensedGame ? {
