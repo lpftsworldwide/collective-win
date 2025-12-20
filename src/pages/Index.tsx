@@ -161,8 +161,7 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Demo Platform Banner */}
-      <DemoBanner />
+      {/* Real Money Platform - No demo banner */}
 
       {/* Signup Bonus Banner */}
       <SignupBonusBanner />

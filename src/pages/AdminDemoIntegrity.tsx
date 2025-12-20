@@ -114,7 +114,7 @@ const AdminDemoIntegrity = () => {
           }
 
           // Test 5: Idempotency (try same spin again - should create new spin, not duplicate)
-          const { data: spin2 } = await supabase.functions.invoke('demo-spin', {
+          const { data: spin2 } = await supabase.functions.invoke('spin', {
             body: { gameId: game.id, wager: 1, sessionId: data.sessionId },
           });
 

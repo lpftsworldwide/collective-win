@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Flame, Play, Info, Lock } from "lucide-react";
 import { LicensedGame } from "@/hooks/useLicensedGames";
-import { DemoGameBadge } from "./DemoGameBadge";
+// Removed DemoGameBadge - real money platform
 import { useAuth } from "@/contexts/AuthContext";
 
 interface LicensedGameCardProps {
@@ -45,10 +45,10 @@ export const LicensedGameCard = ({ game, onShowInfo }: LicensedGameCardProps) =>
   const [isHovered, setIsHovered] = useState(false);
 
   const isHot = game.rtp_certified ? game.rtp_certified >= 96.5 : false;
-  const isDemoOnly = game.status === 'demo_only';
+  const isComingSoon = game.status === 'coming_soon';
   const isComingSoon = game.status === 'coming_soon';
   const providerName = game.provider?.name || 'Provider';
-  const providerCode = game.provider?.code || 'demo';
+  const providerCode = game.provider?.code || 'collective-wins';
 
   const handlePlay = () => {
     if (!user) {
@@ -86,13 +86,6 @@ export const LicensedGameCard = ({ game, onShowInfo }: LicensedGameCardProps) =>
       {/* Overlay gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
       
-      {/* Demo badge */}
-      {isDemoOnly && (
-        <div className="absolute top-2 left-2 z-10">
-          <DemoGameBadge />
-        </div>
-      )}
-
       {/* Coming Soon overlay */}
       {isComingSoon && (
         <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-20">

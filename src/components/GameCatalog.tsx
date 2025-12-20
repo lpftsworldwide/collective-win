@@ -225,8 +225,8 @@ export const GameCatalog = ({ showFilters = true, maxGames }: GameCatalogProps) 
                   </div>
                 )}
 
-                {/* Demo Notice */}
-                {selectedGame.status === 'demo_only' && (
+                {/* Real Money Notice */}
+                {selectedGame.status === 'active' && (
                   <p className="text-xs text-muted-foreground text-center">
                     Real money gaming with certified RTP and provably fair outcomes.
                   </p>

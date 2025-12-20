@@ -16,7 +16,7 @@ import { SlotReels } from "@/components/SlotReels";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import type { SpinOutcome } from "@/types/SpinOutcome";
 
-// Symbol emoji mapping for demo visualization
+// Symbol emoji mapping for game visualization
 const SYMBOL_MAP: Record<string, string> = {
   'wild': '⭐', 'scatter': '💎', 'high1': '💠', 'high2': '7️⃣',
   'high3': '🔔', 'low1': '🍒', 'low2': '🍋', 'low3': '🍊',
@@ -33,7 +33,7 @@ const GamePlay = () => {
   
   // Check if this is a licensed game
   const licensedGame = licensedGames?.find(g => g.game_code === gameId);
-  const demoGame = gameLibrary.find(g => g.GameID === gameId);
+  const fallbackGame = gameLibrary.find(g => g.GameID === gameId);
   
   const [showLicensedGame, setShowLicensedGame] = useState(false);
   const [providerCode, setProviderCode] = useState<GameProviderCode | null>(null);
@@ -111,11 +111,11 @@ const GamePlay = () => {
         'Hacksaw Gaming': 'hacksaw',
       };
       
-      const code = providerCodeMap[licensedGame.provider.name] || 'demo';
+      const code = providerCodeMap[licensedGame.provider.name] || 'collective-wins';
       setProviderCode(code as GameProviderCode);
       
       // Auto-launch licensed game
-      if (licensedGame.status === 'active' && code !== 'demo') {
+      if (licensedGame.status === 'active') {
         setShowLicensedGame(true);
       }
     }
@@ -160,7 +160,7 @@ const GamePlay = () => {
     );
   }
 
-  // Use licensed game data if available, otherwise fall back to demo game
+  // Use licensed game data if available, otherwise fall back to game library
   const game = licensedGame ? {
     GameTitle: licensedGame.name,
     GameID: licensedGame.game_code,
@@ -175,7 +175,7 @@ const GamePlay = () => {
       Mechanics: 'Play the real licensed game with certified RTP and RNG.',
       PayoutStructure: `RTP: ${licensedGame.rtp_certified || 96.0}%`
     }
-  } : demoGame!;
+  } : fallbackGame!;
 
   const handleSpin = async () => {
     // FSM: Only accept input in IDLE state
