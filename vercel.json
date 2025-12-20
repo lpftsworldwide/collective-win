@@ -6,7 +6,7 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!game-tiles|assets|favicon|robots|placeholder).*)",
       "destination": "/index.html"
     }
   ],
