@@ -45,7 +45,6 @@ export const LicensedGameCard = ({ game, onShowInfo }: LicensedGameCardProps) =>
   const [isHovered, setIsHovered] = useState(false);
 
     const isHot = game.rtp_certified ? game.rtp_certified >= 96.5 : false;
-    const isComingSoon = game.status === 'coming_soon';
   const providerName = game.provider?.name || 'Provider';
   const providerCode = game.provider?.code || 'collective-wins';
 
@@ -84,16 +83,6 @@ export const LicensedGameCard = ({ game, onShowInfo }: LicensedGameCardProps) =>
       
       {/* Overlay gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
-      
-      {/* Coming Soon overlay */}
-      {isComingSoon && (
-        <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-20">
-          <div className="text-center">
-            <Lock className="w-8 h-8 text-premium-gold mx-auto mb-2" />
-            <span className="text-premium-gold font-bold text-sm">Coming Soon</span>
-          </div>
-        </div>
-      )}
       
       {/* Content */}
       <div className="absolute inset-0 flex flex-col justify-between p-3">
@@ -143,23 +132,21 @@ export const LicensedGameCard = ({ game, onShowInfo }: LicensedGameCardProps) =>
       </div>
       
       {/* Hover overlay */}
-      {!isComingSoon && (
-        <div className={`absolute inset-0 bg-gradient-to-t from-premium-gold/30 to-mystic-purple/20 transition-opacity duration-300 flex items-center justify-center ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="bg-premium-gold text-gaming-dark px-6 py-2 rounded-full font-bold text-sm shadow-lg glow-gold flex items-center gap-2 font-cinzel">
-            {showLoginRequired ? (
-              <>
-                <Lock className="w-4 h-4" />
-                SIGN UP TO PLAY
-              </>
-            ) : (
-              <>
-                <Play className="w-4 h-4" />
-                PLAY NOW
-              </>
-            )}
-          </div>
+      <div className={`absolute inset-0 bg-gradient-to-t from-premium-gold/30 to-mystic-purple/20 transition-opacity duration-300 flex items-center justify-center ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="bg-premium-gold text-gaming-dark px-6 py-2 rounded-full font-bold text-sm shadow-lg glow-gold flex items-center gap-2 font-cinzel">
+          {showLoginRequired ? (
+            <>
+              <Lock className="w-4 h-4" />
+              SIGN UP TO PLAY
+            </>
+          ) : (
+            <>
+              <Play className="w-4 h-4" />
+              PLAY NOW
+            </>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

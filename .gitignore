@@ -39,3 +39,5 @@ SUPABASE_SERVICE_ROLE_KEY*
 !*.env.example
 __pycache__/
 *.pyc
+*.py
+!*.py.example

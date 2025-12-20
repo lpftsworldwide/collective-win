@@ -67,7 +67,7 @@ export function useLicensedGames(filters?: {
             license_info
           )
         `)
-        .in('status', ['active', 'demo_only', 'coming_soon'])
+        .in('status', ['active', 'demo_only'])
         .order('name', { ascending: true });
 
       if (filters?.category && filters.category !== 'all') {

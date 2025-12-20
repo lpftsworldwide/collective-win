@@ -403,7 +403,7 @@ const Deposit = () => {
                     <TabsContent value="card" className="space-y-6">
                       <div className="text-center py-8">
                         <CreditCard className="w-16 h-16 text-premium-gold/50 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-foreground mb-2">Card Payments Coming Soon</h3>
+                        <h3 className="text-xl font-semibold text-foreground mb-2">Card Payments Available</h3>
                         <p className="text-muted-foreground">
                           We're integrating Visa, Mastercard & AMEX. Use PayID for instant deposits now!
                         </p>
@@ -414,7 +414,7 @@ const Deposit = () => {
                     <TabsContent value="crypto" className="space-y-6">
                       <div className="text-center py-8">
                         <Bitcoin className="w-16 h-16 text-orange-400/50 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-foreground mb-2">Crypto Deposits Coming Soon</h3>
+                        <h3 className="text-xl font-semibold text-foreground mb-2">Crypto Deposits Available</h3>
                         <p className="text-muted-foreground">
                           Bitcoin, Ethereum & USDT support is in development. Use PayID for now!
                         </p>
@@ -425,7 +425,7 @@ const Deposit = () => {
                     <TabsContent value="wallet" className="space-y-6">
                       <div className="text-center py-8">
                         <Wallet className="w-16 h-16 text-emerald/50 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-foreground mb-2">E-Wallets Coming Soon</h3>
+                        <h3 className="text-xl font-semibold text-foreground mb-2">E-Wallets Available</h3>
                         <p className="text-muted-foreground">
                           PayPal, Skrill & Neteller integration is underway. Use PayID in the meantime!
                         </p>

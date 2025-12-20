@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600;700;800;900&family=Crimson+Pro:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,8 +7,6 @@
 /* Ancient Egyptian Mystical Gaming Theme - CollectiveWinners.org 
 All colors MUST be HSL.
 */
-
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600;700;800;900&family=Crimson+Pro:wght@400;500;600&display=swap');
 
 /* Custom Animations */
 @keyframes scroll-left {
@@ -198,6 +198,25 @@ All colors MUST be HSL.
 /* Egyptian hieroglyph decorative background */
 .hieroglyph-bg {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 5 L35 20 L30 35 L25 20 Z' fill='none' stroke='%23d4a84b' stroke-opacity='0.08' stroke-width='1'/%3E%3Ccircle cx='30' cy='45' r='5' fill='none' stroke='%23d4a84b' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E");
+}
+
+/* Tarot & Ancient Scripture Background */
+.tarot-bg {
+  position: relative;
+}
+
+.tarot-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.03;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(45 85% 50% / 0.1) 2px, hsl(45 85% 50% / 0.1) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, hsl(45 85% 50% / 0.1) 2px, hsl(45 85% 50% / 0.1) 4px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Ctext x='100' y='100' font-family='serif' font-size='80' fill='%23d4a84b' text-anchor='middle' dominant-baseline='middle' opacity='0.1'%3E⚡%3C/text%3E%3Ctext x='50' y='50' font-family='serif' font-size='40' fill='%23d4a84b' text-anchor='middle' dominant-baseline='middle' opacity='0.08'%3E🃏%3C/text%3E%3Ctext x='150' y='150' font-family='serif' font-size='40' fill='%23d4a84b' text-anchor='middle' dominant-baseline='middle' opacity='0.08'%3E👁%3C/text%3E%3C/svg%3E");
+  background-size: 100px 100px, 100px 100px, 400px 400px;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Tarot card styling */
