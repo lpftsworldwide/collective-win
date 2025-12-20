@@ -555,25 +555,25 @@ const GamePlay = () => {
               </div>
               <div>
                 <p className="text-muted-foreground">Type</p>
-                <p className="text-muted-foreground font-bold text-xs">Demo Sim</p>
+                <p className="text-premium-gold font-bold text-xs">Real Money</p>
               </div>
             </div>
           </div>
         </Card>
 
-        {/* Demo Disclaimer */}
-        <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+        {/* Responsible Gaming */}
+        <div className="mt-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+            <Shield className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-muted-foreground">
-              <p className="font-semibold text-amber-300 mb-1">Demo Mode Disclaimer</p>
+              <p className="font-semibold text-emerald-300 mb-1">Real Money Gaming</p>
               <p>
-                This is a demonstration using test credits (XP) only. No real money is involved. 
-                Outcomes are generated server-side using seeded RNG for auditability. 
-                This simulation is for educational and preview purposes only.
+                This is a real money casino. All wagers and wins use real AUD. 
+                Outcomes are generated server-side using provably fair RNG. 
+                Play responsibly. 18+ only.
               </p>
-              <a href="/disclosure" className="text-amber-400 hover:underline mt-2 inline-block">
-                Learn more about our demo platform →
+              <a href="/responsible-gambling" className="text-emerald-400 hover:underline mt-2 inline-block">
+                Learn about responsible gaming →
               </a>
             </div>
           </div>
