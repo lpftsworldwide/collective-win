@@ -32,3 +32,10 @@ dist-ssr
 .vercel
 .env*.local
 SUPABASE_SERVICE_ROLE_KEY*
+.env
+.env.local
+.env.*
+*.env
+!*.env.example
+__pycache__/
+*.pyc

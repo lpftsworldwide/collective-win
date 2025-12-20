@@ -3,12 +3,20 @@
 Complete database fix - add missing columns and update thumbnails
 """
 
+import os
+import sys
 import requests
 import json
 
 PROJECT_REF = "yiorietrtfosjnpzznnr"
 SUPABASE_URL = f"https://{PROJECT_REF}.supabase.co"
-SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlpb3JpZXRydGZvc2pucHp6bm5yIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzMzOTI4OCwiZXhwIjoyMDcyOTE1Mjg4fQ.-qK8eeCrh-wV5FvwGS92zJ3xf11MWJf-v0kL_k3BiR4"
+# Get service role key from environment (NEVER hardcode!)
+SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+
+if not SERVICE_ROLE_KEY:
+    print("❌ Error: SUPABASE_SERVICE_ROLE_KEY environment variable not set")
+    print("   Set it via: export SUPABASE_SERVICE_ROLE_KEY='your-key'")
+    sys.exit(1)
 
 headers = {
     "apikey": SERVICE_ROLE_KEY,

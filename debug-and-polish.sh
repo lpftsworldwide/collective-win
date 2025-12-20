@@ -16,8 +16,14 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlpb3JpZXRydGZvc2pucHp6bm5yIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzMzOTI4OCwiZXhwIjoyMDcyOTE1Mjg4fQ.-qK8eeCrh-wV5FvwGS92zJ3xf11MWJf-v0kL_k3BiR4"
+# Get service role key from environment (NEVER hardcode!)
+SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-}"
 SUPABASE_URL="https://yiorietrtfosjnpzznnr.supabase.co"
+
+if [ -z "$SERVICE_ROLE_KEY" ]; then
+    print_warning "SUPABASE_SERVICE_ROLE_KEY not set - some checks will be skipped"
+    print_warning "Set it via: export SUPABASE_SERVICE_ROLE_KEY='your-key'"
+fi
 
 print_header() {
     echo ""
