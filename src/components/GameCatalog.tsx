@@ -8,7 +8,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GameCardSkeleton } from "@/components/GameCardSkeleton";
 import { Search, Sparkles, Loader2, AlertCircle, Shield, Percent, Zap } from "lucide-react";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 interface GameCatalogProps {
   showFilters?: boolean;
@@ -29,7 +31,7 @@ export const GameCatalog = ({ showFilters = true, maxGames }: GameCatalogProps) 
 
   const { data: providers } = useGameProviders();
 
-  // Calculate category counts
+  // Calculate category counts (memoized for performance)
   const categoryCounts = useMemo(() => {
     if (!games) return {};
     const counts: Record<string, number> = { all: games.length };
@@ -39,7 +41,36 @@ export const GameCatalog = ({ showFilters = true, maxGames }: GameCatalogProps) 
     return counts;
   }, [games]);
 
-  const displayedGames = maxGames ? games?.slice(0, maxGames) : games;
+  // Memoized filtered games for performance (prevents re-calculation on every render)
+  const filteredGames = useMemo(() => {
+    if (!games) return [];
+    
+    let filtered = [...games];
+    
+    // Category filter
+    if (category !== 'all') {
+      filtered = filtered.filter(game => game.category === category);
+    }
+    
+    // Provider filter
+    if (provider !== 'all') {
+      filtered = filtered.filter(game => game.provider?.name === provider);
+    }
+    
+    // Search filter
+    if (search.length >= 2) {
+      const searchLower = search.toLowerCase();
+      filtered = filtered.filter(game => 
+        game.name.toLowerCase().includes(searchLower) ||
+        game.game_code.toLowerCase().includes(searchLower) ||
+        game.provider?.name.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    return filtered;
+  }, [games, category, provider, search]);
+  
+  const displayedGames = maxGames ? filteredGames?.slice(0, maxGames) : filteredGames;
 
   if (error) {
     return (
@@ -115,23 +146,25 @@ export const GameCatalog = ({ showFilters = true, maxGames }: GameCatalogProps) 
       )}
 
       {/* Game Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-[3/4] rounded-xl bg-gaming-card" />
-          ))}
-        </div>
-      ) : displayedGames && displayedGames.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {displayedGames.map((game) => (
-            <LicensedGameCard
-              key={game.id}
-              game={game}
-              onShowInfo={setSelectedGame}
-            />
-          ))}
-        </div>
-      ) : (
+      <ErrorBoundary>
+        {isLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <GameCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : displayedGames && displayedGames.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+            {displayedGames.map((game) => (
+              <ErrorBoundary key={game.id} fallback={<GameCardSkeleton />}>
+                <LicensedGameCard
+                  game={game}
+                  onShowInfo={setSelectedGame}
+                />
+              </ErrorBoundary>
+            ))}
+          </div>
+        ) : (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <Sparkles className="w-12 h-12 text-premium-gold/50 mb-4" />
           <h3 className="text-lg font-semibold text-foreground mb-2">No Games Found</h3>

@@ -33,14 +33,16 @@ export const VIPCard = ({ currentTier = 'bronze', totalWagered = 0, points = 0 }
   const navigate = useNavigate();
   
   const currentTierIndex = vipTiers.findIndex(t => t.tier === currentTier);
-  const currentTierData = vipTiers[currentTierIndex];
-  const nextTierData = vipTiers[currentTierIndex + 1];
+  const currentTierData = vipTiers[currentTierIndex] || vipTiers[0]; // Fallback to bronze
+  const nextTierData = currentTierIndex >= 0 && currentTierIndex < vipTiers.length - 1 
+    ? vipTiers[currentTierIndex + 1] 
+    : null;
   
-  const progressToNext = nextTierData 
-    ? Math.min(100, ((totalWagered - currentTierData.minWager) / (nextTierData.minWager - currentTierData.minWager)) * 100)
+  const progressToNext = nextTierData && currentTierData
+    ? Math.min(100, Math.max(0, ((totalWagered - currentTierData.minWager) / (nextTierData.minWager - currentTierData.minWager)) * 100))
     : 100;
   
-  const amountToNext = nextTierData ? nextTierData.minWager - totalWagered : 0;
+  const amountToNext = nextTierData ? Math.max(0, nextTierData.minWager - totalWagered) : 0;
 
   if (!user) {
     return (

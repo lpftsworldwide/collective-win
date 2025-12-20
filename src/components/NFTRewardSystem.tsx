@@ -182,23 +182,25 @@ export const NFTRewardSystem = () => {
           console.error('Error fetching user tier:', error);
           setUserTier({ tier: 'bronze', points: 0, nextTierPoints: 100 });
         } else {
-          const tier = (userData?.tier || 'bronze') as UserTier['tier'];
-          const points = userData?.loyalty_points || 0;
-          
-          // Tier thresholds
-          const tierThresholds = {
-            bronze: { next: 100 },
-            silver: { next: 500 },
-            gold: { next: 2000 },
-            platinum: { next: 10000 },
-            diamond: { next: Infinity },
-          };
+        const tier = (userData?.tier || 'bronze') as UserTier['tier'];
+        const points = userData?.loyalty_points || 0;
+        
+        // Tier thresholds with null safety
+        const tierThresholds: Record<UserTier['tier'], { next: number }> = {
+          bronze: { next: 100 },
+          silver: { next: 500 },
+          gold: { next: 2000 },
+          platinum: { next: 10000 },
+          diamond: { next: Infinity },
+        };
 
-          setUserTier({
-            tier,
-            points,
-            nextTierPoints: tierThresholds[tier]?.next || Infinity,
-          });
+        const threshold = tierThresholds[tier] || tierThresholds.bronze;
+
+        setUserTier({
+          tier,
+          points,
+          nextTierPoints: threshold.next,
+        });
         }
 
         // Get unlocked NFTs (from user_nft_rewards table if it exists)

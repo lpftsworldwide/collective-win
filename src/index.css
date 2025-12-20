@@ -185,6 +185,11 @@ All colors MUST be HSL.
   100% { background-position: 200% 0; }
 }
 
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 .shimmer-gold {
   background: linear-gradient(90deg, transparent, hsl(45 85% 50% / 0.4), transparent);
   background-size: 200% 100%;
