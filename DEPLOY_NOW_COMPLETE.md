@@ -222,6 +222,29 @@ After deployment, verify:
 
 ## 🎯 DEPLOYMENT ORDER (IMPORTANT!)
 
+### ⚡ QUICK START: Hybrid Automation
+
+**NEW!** Run the automated deployment script:
+
+```bash
+cd /var/home/master/LPFTS_Dev/Projects/COLLECTIVE-WINS
+./deploy-hybrid-automated.sh
+```
+
+This script:
+- ✅ Guides you through SQL migration (copy/paste)
+- ✅ Automatically deploys edge functions
+- ✅ Triggers Vercel rebuild
+- ✅ Verifies everything worked
+
+**See:** `DEPLOY_HYBRID_GUIDE.md` for full details
+
+---
+
+### 📋 Manual Deployment Order
+
+If you prefer manual control:
+
 1. **First:** Run SQL migration in Supabase (Step 1)
 2. **Second:** Deploy edge functions (Step 2)
 3. **Third:** Trigger Vercel rebuild (Step 3)
@@ -231,4 +254,4 @@ After deployment, verify:
 
 ---
 
-**Ready? Start with Step 1 and work through each step!** 🚀
+**Ready? Run the automation script or follow manual steps below!** 🚀
