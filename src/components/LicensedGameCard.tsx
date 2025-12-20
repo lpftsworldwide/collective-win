@@ -100,15 +100,17 @@ export const LicensedGameCard = ({ game, onShowInfo }: LicensedGameCardProps) =>
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Game Image with enhanced fallback */}
-      {!imageError && game.thumbnail_url ? (
+      {/* Game Image with enhanced fallback - Always try to load image first */}
+      {!imageError ? (
         <img 
-          src={game.thumbnail_url.startsWith('/') ? game.thumbnail_url : `/game-tiles/${game.game_code}.jpg`}
+          src={game.thumbnail_url && game.thumbnail_url.startsWith('/') 
+            ? game.thumbnail_url 
+            : `/game-tiles/${game.game_code}.jpg`}
           alt={game.name}
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
           loading="lazy"
           onError={() => {
-            console.log(`Image failed to load: ${game.thumbnail_url} for game ${game.game_code}`);
+            console.log(`Image failed to load for game ${game.game_code}, using fallback`);
             setImageError(true);
           }}
         />
@@ -121,18 +123,6 @@ export const LicensedGameCard = ({ game, onShowInfo }: LicensedGameCardProps) =>
             {gameInitials}
           </div>
         </div>
-      )}
-      
-      {/* Try to load image even if thumbnail_url is missing */}
-      {!game.thumbnail_url && !imageError && (
-        <img 
-          src={`/game-tiles/${game.game_code}.jpg`}
-          alt={game.name}
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
-          loading="lazy"
-          onError={() => setImageError(true)}
-          style={{ display: 'none' }}
-        />
       )}
       
       {/* Overlay gradient */}

@@ -24,6 +24,8 @@ import Community from "./pages/Community";
 import CommunityFeed from "./pages/CommunityFeed";
 import NFTs from "./pages/NFTs";
 import DailyReading from "./pages/DailyReading";
+import SanctuaryStones from "./pages/SanctuaryStones";
+import SanctuaryMerch from "./pages/SanctuaryMerch";
 import VIPClub from "./pages/VIPClub";
 import Disclosure from "./pages/Disclosure";
 import AdminDemoIntegrity from "./pages/AdminDemoIntegrity";
@@ -59,6 +61,8 @@ const App = () => (
             <Route path="/community/feed" element={<CommunityFeed />} />
             <Route path="/nfts" element={<NFTs />} />
             <Route path="/daily-reading" element={<DailyReading />} />
+            <Route path="/sanctuary/stones" element={<SanctuaryStones />} />
+            <Route path="/sanctuary/merch" element={<SanctuaryMerch />} />
             <Route path="/vip" element={<VIPClub />} />
             <Route path="/disclosure" element={<Disclosure />} />
             <Route path="/admin/demo-integrity" element={<AdminDemoIntegrity />} />

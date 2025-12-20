@@ -20,7 +20,14 @@ import { RewardsShowcase } from "@/components/RewardsShowcase";
 // Removed DemoBanner - this is a REAL MONEY platform
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Trophy, CreditCard, Shield, Sparkles, LogOut, User, Activity, ScrollText, Pyramid, Crown, Eye, Gift, Ticket, Users } from "lucide-react";
+import { Trophy, CreditCard, Shield, Sparkles, LogOut, User, Activity, ScrollText, Pyramid, Crown, Eye, Gift, Ticket, Users, Gem, ShoppingBag, ChevronDown } from "lucide-react";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { GamingAdvisor } from "@/components/GamingAdvisor";
 import { AdminTestPanel } from "@/components/AdminTestPanel";
@@ -103,6 +110,38 @@ const Index = () => {
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-2">
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger className="bg-transparent hover:bg-premium-gold/10 text-premium-gold border-0 data-[state=open]:bg-premium-gold/20">
+                      <Pyramid className="w-4 h-4 mr-1" />
+                      Sanctuary
+                      <ChevronDown className="w-3 h-3 ml-1" />
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <div className="w-[200px] p-2 bg-gaming-dark/95 backdrop-blur-md border border-premium-gold/30 rounded-lg">
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-premium-gold hover:bg-premium-gold/10 mb-1"
+                          onClick={() => navigate("/sanctuary/stones")}
+                        >
+                          <Gem className="w-4 h-4 mr-2" />
+                          Spiritual Stones
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-premium-gold hover:bg-premium-gold/10"
+                          onClick={() => navigate("/sanctuary/merch")}
+                        >
+                          <ShoppingBag className="w-4 h-4 mr-2" />
+                          Merch & Relics
+                        </Button>
+                      </div>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+              
               <Button
                 variant="ghost"
                 size="sm"
