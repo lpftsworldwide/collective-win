@@ -18,6 +18,9 @@ const WELCOME_BONUS_AMOUNT = 111.00;
 const BONUS_WAGERING_REQUIREMENT = 35; // 35x playthrough
 
 Deno.serve(async (req) => {
+  const origin = req.headers.get('Origin');
+  const corsHeaders = getCorsHeaders(origin);
+  
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });

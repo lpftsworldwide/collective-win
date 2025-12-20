@@ -12,9 +12,22 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+// CORS: Restrict to production domain for security
+const allowedOrigins = [
+  'https://collective-win.vercel.app',
+  'https://collective-win-git-main-lpftss-projects.vercel.app',
+  'http://localhost:5173', // Local development
+  'http://localhost:3000', // Local development
+];
+
+const getCorsHeaders = (origin: string | null) => {
+  const isAllowed = origin && allowedOrigins.some(allowed => origin.startsWith(allowed));
+  return {
+    'Access-Control-Allow-Origin': isAllowed ? origin! : allowedOrigins[0],
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Max-Age': '86400',
+  };
 };
 
 // Import SlotEngine logic (re-implemented for Deno)
@@ -590,7 +603,7 @@ serve(async (req) => {
       message: errorMessage,
     }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...getCorsHeaders(req.headers.get('Origin')), 'Content-Type': 'application/json' },
     });
   }
 });

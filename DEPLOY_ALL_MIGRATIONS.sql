@@ -143,9 +143,10 @@ SET
   updated_at = now();
 
 -- Insert games using subquery for provider_id
+-- Note: thumbnail_url will be set via UPDATE after INSERT
 INSERT INTO public.licensed_games (
   provider_id, game_code, name, category, rtp_certified, volatility, status,
-  min_bet_aud, max_bet_aud, is_demo_available
+  min_bet_aud, max_bet_aud, is_demo_available, thumbnail_url
 ) VALUES
   ((SELECT id FROM public.game_providers WHERE code = 'collective-wins'), 'big-bass-splash', 'Big Bass Splash', 'slots', 96.71, 'high', 'active', 0.20, 1000.00, false),
   ((SELECT id FROM public.game_providers WHERE code = 'collective-wins'), 'gates-of-olympus', 'Gates of Olympus', 'slots', 96.50, 'high', 'active', 0.20, 1000.00, true),
