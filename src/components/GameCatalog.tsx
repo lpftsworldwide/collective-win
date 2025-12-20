@@ -165,12 +165,13 @@ export const GameCatalog = ({ showFilters = true, maxGames }: GameCatalogProps) 
             ))}
           </div>
         ) : (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <Sparkles className="w-12 h-12 text-premium-gold/50 mb-4" />
-          <h3 className="text-lg font-semibold text-foreground mb-2">No Games Found</h3>
-          <p className="text-muted-foreground">Try adjusting your filters or search.</p>
-        </div>
-      )}
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Sparkles className="w-12 h-12 text-premium-gold/50 mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">No Games Found</h3>
+            <p className="text-muted-foreground">Try adjusting your filters or search.</p>
+          </div>
+        )}
+      </ErrorBoundary>
 
       {/* Show More Button */}
       {maxGames && games && games.length > maxGames && (
