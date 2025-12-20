@@ -18,6 +18,7 @@ import { GameLeaderboard } from "@/components/GameLeaderboard";
 import { Footer } from "@/components/Footer";
 import { TarotLoreBanner } from "@/components/TarotLoreBanner";
 import { RewardsShowcase } from "@/components/RewardsShowcase";
+import { NFTRewardSystem } from "@/components/NFTRewardSystem";
 // Removed DemoBanner - this is a REAL MONEY platform
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -202,6 +203,11 @@ const Index = () => {
 
         {/* Rewards Showcase */}
         <RewardsShowcase />
+
+        {/* NFT Reward System (Tier Upgrade Perks) */}
+        <section className="container mx-auto px-4 py-8">
+          <NFTRewardSystem />
+        </section>
 
         {/* Live Transactions + VIP Section */}
         <section className="container mx-auto px-4 py-8">

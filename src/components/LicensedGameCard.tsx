@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Flame, Play, Info, Lock } from "lucide-react";
+import { ImageIcon } from "lucide-react";
 import { LicensedGame } from "@/hooks/useLicensedGames";
 // Removed DemoGameBadge - real money platform
 import { useAuth } from "@/contexts/AuthContext";
