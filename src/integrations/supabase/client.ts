@@ -15,7 +15,7 @@ const SUPABASE_PUBLISHABLE_KEY =
   import.meta.env.vitepublishiblekey ||
   import.meta.env.VITESUPABASEPUBLISHABLEKEY ||
   (import.meta.env as any).vite_supabase_publishable_key ||
-  'sb_publishable_imsM3rmYQD2Oq8Ip-CtVag_w8BNiYeQ'; // Hardcoded fallback - ensures site works
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlpb3JpZXRydGZvc2pucHp6bm5yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTczMzkyODgsImV4cCI6MjA3MjkxNTI4OH0.UcG3lSxiUp5ehj8p_6ikT-KP9cLT0_4gvJ1RbVhLXk0'; // Hardcoded fallback - ensures site works
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
