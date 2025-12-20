@@ -2,22 +2,20 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Support both formats: VITE_SUPABASE_URL and vitesupabaseurl (Vercel lowercase)
-// Vite only exposes vars starting with VITE_, so we check both possible formats
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL 
-  || import.meta.env.vitesupabaseurl
-  || import.meta.env.VITE_SUPABASEURL
-  || (import.meta.env as any).vite_supabase_url;
+// Support multiple formats + hardcoded fallback to ensure site always works
+const SUPABASE_URL = 
+  import.meta.env.VITE_SUPABASE_URL || 
+  import.meta.env.vitesupabaseurl ||
+  import.meta.env.VITESUPABASEURL ||
+  (import.meta.env as any).vite_supabase_url ||
+  'https://yiorietrtfosjnpzznnr.supabase.co'; // Hardcoded fallback - ensures site works
   
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY 
-  || import.meta.env.vitepublishiblekey
-  || import.meta.env.VITE_SUPABASEPUBLISHABLEKEY
-  || (import.meta.env as any).vite_supabase_publishable_key;
-
-// Fallback: Try to get from window if available (for debugging)
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-  console.error('Missing Supabase env vars. Available env vars:', Object.keys(import.meta.env).filter(k => k.toLowerCase().includes('supabase')));
-}
+const SUPABASE_PUBLISHABLE_KEY = 
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 
+  import.meta.env.vitepublishiblekey ||
+  import.meta.env.VITESUPABASEPUBLISHABLEKEY ||
+  (import.meta.env as any).vite_supabase_publishable_key ||
+  'sb_publishable_imsM3rmYQD2Oq8Ip-CtVag_w8BNiYeQ'; // Hardcoded fallback - ensures site works
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
