@@ -108,6 +108,34 @@ const Index = () => {
               </div>
             </div>
 
+            {/* Mobile Quick Access - Games Button */}
+            <div className="md:hidden flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  navigate('/');
+                  setTimeout(() => {
+                    const element = document.getElementById('games');
+                    element?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+                className="text-premium-gold hover:bg-premium-gold/10 border border-premium-gold/30"
+              >
+                <Sparkles className="w-4 h-4 mr-1" />
+                Games
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/oracle")}
+                className="text-premium-gold hover:bg-premium-gold/10 border border-premium-gold/30"
+              >
+                <ScrollText className="w-4 h-4 mr-1" />
+                Oracle
+              </Button>
+            </div>
+
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-2">
               <NavigationMenu>
