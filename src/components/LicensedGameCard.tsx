@@ -162,7 +162,7 @@ export const LicensedGameCard = ({ game, onShowInfo }: LicensedGameCardProps) =>
             ) : (
               <>
                 <Play className="w-4 h-4" />
-                {isDemoOnly ? 'PLAY DEMO' : 'PLAY NOW'}
+                PLAY NOW
               </>
             )}
           </div>

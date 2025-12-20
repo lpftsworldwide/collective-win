@@ -70,7 +70,7 @@ const AdminDemoIntegrity = () => {
 
       try {
         const startTime = Date.now();
-        const { data, error } = await supabase.functions.invoke('demo-spin', {
+        const { data, error } = await supabase.functions.invoke('spin', {
           body: { gameId: game.id, wager: 1 },
         });
 

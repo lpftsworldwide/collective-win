@@ -4,7 +4,7 @@ import { gameLibrary } from "@/data/gameLibrary";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Minus, Plus, AlertTriangle, RefreshCw } from "lucide-react";
+import { ArrowLeft, Minus, Plus, AlertTriangle, Coins, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -41,11 +41,48 @@ const GamePlay = () => {
   // FSM for slot machine state management
   const fsm = useSlotMachineFSM();
   
-  // Demo-specific state (only used if not licensed game)
-  const [demoBalance, setDemoBalance] = useState(10000);
+  // Real money balance from user account
+  const [userBalance, setUserBalance] = useState<number | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [betAmount, setBetAmount] = useState(1);
   const [spinCount, setSpinCount] = useState(0);
+  
+  // Fetch user's real money balance
+  useEffect(() => {
+    if (!user) return;
+    
+    const fetchBalance = async () => {
+      const { data, error } = await supabase
+        .from('users')
+        .select('total_balance_aud, bonus_balance')
+        .eq('id', user.id)
+        .single();
+      
+      if (!error && data) {
+        setUserBalance((data.total_balance_aud || 0) + (data.bonus_balance || 0));
+      }
+    };
+    
+    fetchBalance();
+    
+    // Subscribe to balance updates
+    const channel = supabase
+      .channel('user-balance-updates')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'users',
+        filter: `id=eq.${user.id}`,
+      }, (payload) => {
+        const newData = payload.new as { total_balance_aud: number; bonus_balance: number };
+        setUserBalance((newData.total_balance_aud || 0) + (newData.bonus_balance || 0));
+      })
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
   
   // Store previous outcome for sound comparison
   const previousOutcomeRef = useRef<SpinOutcome | null>(null);
@@ -92,18 +129,7 @@ const GamePlay = () => {
     }
   }, [fsm.outcome, playFromOutcome]);
   
-  // Reset demo balance function
-  const resetDemoBalance = () => {
-    setDemoBalance(10000);
-    setSessionId(null);
-    setSpinCount(0);
-    fsm.reset();
-    previousOutcomeRef.current = null;
-    toast({
-      title: "Demo Credits Reset",
-      description: "Your demo balance has been reset to 10,000 credits.",
-    });
-  };
+  // No reset function for real money - users must deposit
 
   if (!demoGame && !licensedGame) {
     return (
@@ -158,12 +184,22 @@ const GamePlay = () => {
       return;
     }
     
-    if (betAmount > demoBalance) {
+    if (userBalance === null) {
       toast({
-        title: "Insufficient Demo Credits",
-        description: "Please reduce your bet or reset your demo balance.",
+        title: "Loading Balance",
+        description: "Please wait while we load your account balance.",
+        variant: "default",
+      });
+      return;
+    }
+    
+    if (betAmount > userBalance) {
+      toast({
+        title: "Insufficient Balance",
+        description: "Please reduce your bet or deposit more funds.",
         variant: "destructive",
       });
+      navigate('/deposit');
       return;
     }
 
@@ -176,8 +212,8 @@ const GamePlay = () => {
       // FSM: Start spinning
       fsm.startSpinning();
       
-      // Call demo-spin edge function (server-side RNG)
-      const { data, error } = await supabase.functions.invoke('demo-spin', {
+      // Call spin edge function (server-side RNG for real money)
+      const { data, error } = await supabase.functions.invoke('spin', {
         body: {
           gameId: gameId,
           wager: betAmount,
@@ -249,15 +285,17 @@ const GamePlay = () => {
         // FSM: Start paying (or feature intro)
         fsm.startPaying();
         
-        // Update balance and state
-        setDemoBalance(data.newBalance);
+        // Update balance from response
+        if (data.balance !== undefined) {
+          setUserBalance(data.balance);
+        }
         setSpinCount(data.spinIndex || spinCount + 1);
         
         // Show win toast
         if (outcome.totalWin > 0) {
           toast({
-            title: "Demo Win! 🎉",
-            description: `You won ${outcome.totalWin.toFixed(2)} demo credits!`,
+            title: "Win! 🎉",
+            description: `You won $${outcome.totalWin.toFixed(2)} AUD!`,
           });
         }
         
@@ -266,7 +304,7 @@ const GamePlay = () => {
           fsm.completePayment();
         }, 2000);
         
-        console.log('[Demo Spin]', {
+        console.log('[Spin]', {
           spinId: outcome.spinId,
           spinIndex: data.spinIndex,
           wager: betAmount,
@@ -277,19 +315,19 @@ const GamePlay = () => {
       }, spinDuration);
 
     } catch (error: any) {
-      console.error('Demo spin error:', error);
+      console.error('Spin error:', error);
       fsm.reset(); // Reset FSM on error
       
       if (error.message?.includes('Insufficient')) {
         toast({
-          title: "Out of Demo Credits",
-          description: "Click the reset button to get more demo credits.",
+          title: "Insufficient Balance",
+          description: "Please deposit more funds to continue playing.",
           variant: "destructive",
         });
       } else {
         toast({
           title: "Spin Failed",
-          description: error.message || "Unable to process demo spin.",
+          description: error.message || "Unable to process spin. Please try again.",
           variant: "destructive",
         });
       }
@@ -350,21 +388,24 @@ const GamePlay = () => {
     );
   }
 
-  // Demo game UI (existing code)
+  // Real Money Game UI
+  if (userBalance === null) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-premium-gold mb-4">Loading Your Balance...</h1>
+          <p className="text-muted-foreground">Please wait while we load your account.</p>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="min-h-screen bg-background relative">
       {/* Mystical background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(280_45%_10%/0.5),transparent_70%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,hsl(42_80%_12%/0.3),transparent_50%)]" />
-      </div>
-
-      {/* Demo Mode Banner */}
-      <div className="bg-amber-500/20 border-b border-amber-500/30 px-4 py-2">
-        <div className="container mx-auto flex items-center justify-center gap-2 text-amber-300 text-sm">
-          <AlertTriangle className="w-4 h-4" />
-          <span>DEMO MODE — No real money. Test credits only.</span>
-        </div>
       </div>
 
       {/* Header */}
@@ -382,21 +423,20 @@ const GamePlay = () => {
             </Button>
             <div className="text-center">
               <h1 className="text-lg font-bold text-premium-gold">{game.GameTitle}</h1>
-              <p className="text-xs text-muted-foreground">Demo Simulation</p>
+              <p className="text-xs text-muted-foreground">Real Money Gaming</p>
             </div>
             <div className="text-right flex items-center gap-2">
               <div>
-                <p className="text-xs text-muted-foreground">Demo Credits</p>
-                <p className="text-lg font-bold text-amber-400">{demoBalance.toFixed(0)} XP</p>
+                <p className="text-xs text-muted-foreground">Balance</p>
+                <p className="text-lg font-bold text-premium-gold">${userBalance.toFixed(2)} AUD</p>
               </div>
               <Button
                 variant="ghost"
-                size="icon"
-                onClick={resetDemoBalance}
-                className="text-muted-foreground hover:text-amber-400"
-                title="Reset Demo Balance"
+                size="sm"
+                onClick={() => navigate('/deposit')}
+                className="text-premium-gold hover:text-premium-gold-light border border-premium-gold/30"
               >
-                <RefreshCw className="w-4 h-4" />
+                Deposit
               </Button>
             </div>
           </div>
@@ -405,11 +445,11 @@ const GamePlay = () => {
 
       {/* Game Area */}
       <main className="container mx-auto px-4 py-8 max-w-4xl relative">
-        {/* Demo Badge */}
+        {/* Real Money Badge */}
         <div className="flex justify-center mb-4">
-          <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 px-4 py-1">
-            <AlertTriangle className="w-3 h-3 mr-1" />
-            DEMO ONLY — No real money involved
+          <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 px-4 py-1">
+            <Coins className="w-3 h-3 mr-1" />
+            REAL MONEY — Certified RTP {game.RTP}%
           </Badge>
         </div>
 
@@ -428,8 +468,8 @@ const GamePlay = () => {
             {/* Win Display - derived from outcome */}
             {fsm.outcome && fsm.outcome.totalWin > 0 && (
               <div className="text-center mb-4">
-                <p className="text-3xl font-bold text-amber-400 animate-bounce inline-block px-6 py-2 rounded-lg bg-gaming-dark/50">
-                  DEMO WIN: {fsm.outcome.totalWin.toFixed(2)} XP
+                <p className="text-3xl font-bold text-premium-gold animate-bounce inline-block px-6 py-2 rounded-lg bg-gaming-dark/50">
+                  WIN: ${fsm.outcome.totalWin.toFixed(2)} AUD
                 </p>
               </div>
             )}
@@ -460,7 +500,7 @@ const GamePlay = () => {
               </Button>
               <div className="text-center min-w-[120px]">
                 <p className="text-xs text-muted-foreground">Bet Amount</p>
-                <p className="text-2xl font-bold text-amber-400">{betAmount} XP</p>
+                <p className="text-2xl font-bold text-premium-gold">${betAmount.toFixed(2)} AUD</p>
               </div>
               <Button
                 variant="outline"
@@ -475,10 +515,10 @@ const GamePlay = () => {
 
             <Button
               onClick={handleSpin}
-              disabled={!fsm.canAcceptInput || betAmount > demoBalance}
-              className="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:opacity-90 text-lg py-6 font-bold text-black"
+              disabled={!fsm.canAcceptInput || betAmount > userBalance}
+              className="w-full bg-gradient-to-r from-premium-gold via-amber-500 to-premium-gold hover:opacity-90 text-lg py-6 font-bold text-gaming-dark"
             >
-              {fsm.isSpinning ? "SPINNING..." : "DEMO SPIN"}
+              {fsm.isSpinning ? "SPINNING..." : "SPIN"}
             </Button>
 
             {/* Quick Bet Buttons */}
@@ -489,10 +529,10 @@ const GamePlay = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => setBetAmount(amount)}
-                  disabled={!fsm.canAcceptInput}
-                  className="border-muted-foreground/30 text-muted-foreground hover:bg-muted/10"
+                  disabled={!fsm.canAcceptInput || amount > userBalance}
+                  className="border-premium-gold/30 text-premium-gold hover:bg-premium-gold/10"
                 >
-                  {amount} XP
+                  ${amount} AUD
                 </Button>
               ))}
             </div>

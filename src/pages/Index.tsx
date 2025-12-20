@@ -16,7 +16,7 @@ import { RTPMarketingBanner } from "@/components/RTPMarketingBanner";
 import { LiveCommunityFeed } from "@/components/LiveCommunityFeed";
 import { GameLeaderboard } from "@/components/GameLeaderboard";
 import { Footer } from "@/components/Footer";
-import { DemoBanner } from "@/components/DemoBanner";
+// Removed DemoBanner - this is a REAL MONEY platform
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Trophy, CreditCard, Shield, Sparkles, LogOut, User, Activity, ScrollText, Pyramid, Crown, Eye, Gift, Ticket, Users } from "lucide-react";

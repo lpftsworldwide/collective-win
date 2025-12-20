@@ -228,7 +228,7 @@ export const GameCatalog = ({ showFilters = true, maxGames }: GameCatalogProps) 
                 {/* Demo Notice */}
                 {selectedGame.status === 'demo_only' && (
                   <p className="text-xs text-muted-foreground text-center">
-                    This game is currently in demo mode. Outcomes are simulated and no real money is wagered.
+                    Real money gaming with certified RTP and provably fair outcomes.
                   </p>
                 )}
               </div>

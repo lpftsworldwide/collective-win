@@ -128,7 +128,7 @@ export const BonusDisplay = () => {
               Claim Your $111 Welcome Bonus!
             </h3>
             <p className="text-sm text-muted-foreground mb-3">
-              New players get $111 demo credits to start playing. Minimum $30 buy-in required after bonus.
+              New players get $111 AUD welcome bonus! Minimum $30 deposit required after bonus. Real money gaming.
             </p>
             <Button
               onClick={handleClaimBonus}
@@ -173,7 +173,7 @@ export const BonusDisplay = () => {
           {isActive && (
             <div className="space-y-2 text-sm">
               <p className="text-muted-foreground">
-                Bonus credits available for demo play
+                Bonus funds available for real money play
               </p>
               {bonus.expires_at && (
                 <p className="text-xs text-muted-foreground">
@@ -192,7 +192,7 @@ export const BonusDisplay = () => {
                 <ul className="list-disc list-inside space-y-1">
                   <li>Minimum $30 buy-in required after bonus</li>
                   <li>Cannot withdraw until Silver tier</li>
-                  <li>Demo credits only - no real money involved</li>
+                  <li>Real money bonus - withdrawable after wagering requirements met</li>
                 </ul>
               </div>
             </div>

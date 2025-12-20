@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
         bonus_amount: WELCOME_BONUS_AMOUNT,
         currency: 'AUD',
         status: 'active',
-        wagering_requirement: 0.00, // No wagering for demo credits
+        wagering_requirement: WELCOME_BONUS_AMOUNT * BONUS_WAGERING_REQUIREMENT, // 35x wagering for real money
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
         claimed_at: new Date().toISOString()
       })
@@ -146,7 +146,7 @@ Deno.serve(async (req) => {
         success: true,
         bonus_id: newBonus.id,
         bonus_amount: WELCOME_BONUS_AMOUNT,
-        wagering_requirement: 0.00, // No wagering for demo
+        wagering_requirement: WELCOME_BONUS_AMOUNT * BONUS_WAGERING_REQUIREMENT, // 35x wagering
         expires_at: newBonus.expires_at,
         message: `Welcome bonus of $${WELCOME_BONUS_AMOUNT} AUD credited! Minimum $30 buy-in required after bonus. Cannot withdraw until Silver tier.`
       }),
