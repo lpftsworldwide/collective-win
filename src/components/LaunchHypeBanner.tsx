@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Rocket, Sparkles, Gift, Clock, Users, TrendingUp, Zap, Crown, Eye, ScrollText } from "lucide-react";
+import { Rocket, Sparkles, Gift, Clock, Users, TrendingUp, Zap, Crown, Eye, ScrollText, Gem, ShoppingBag, Heart } from "lucide-react";
 
 export const LaunchHypeBanner = () => {
   const navigate = useNavigate();
@@ -86,8 +86,14 @@ export const LaunchHypeBanner = () => {
             <span className="bg-gradient-to-r from-premium-gold via-papyrus to-premium-gold bg-clip-text text-transparent glow-gold-text">
               Collective Fortune
             </span>
-            <span className="block text-papyrus/80 text-2xl md:text-4xl mt-2">Shall Open Soon</span>
+            <span className="block text-papyrus/80 text-2xl md:text-4xl mt-2 animate-pulse">Are Now Open</span>
           </h2>
+          
+          {/* Excitement Subtitle */}
+          <p className="text-lg md:text-xl text-papyrus/70 font-crimson max-w-2xl mx-auto mt-4">
+            Enter the mystical realm where ancient wisdom meets modern gaming. Discover your destiny through tarot readings, 
+            unlock spiritual stones, and claim your share of the collective fortune.
+          </p>
 
           {/* Countdown - Egyptian styled */}
           <div className="flex justify-center gap-3 md:gap-6">
@@ -144,17 +150,79 @@ export const LaunchHypeBanner = () => {
             </div>
             <div className="flex items-center gap-2">
               <ScrollText className="w-5 h-5 text-turquoise" />
-              <span className="font-cinzel font-bold">29+</span>
+              <span className="font-cinzel font-bold">50+</span>
               <span className="text-muted-foreground font-crimson">Sacred Games</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Gem className="w-5 h-5 text-premium-gold" />
+              <span className="font-cinzel font-bold">8</span>
+              <span className="text-muted-foreground font-crimson">Mystical Stones</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Heart className="w-5 h-5 text-pink-400" />
+              <span className="font-cinzel font-bold">78</span>
+              <span className="text-muted-foreground font-crimson">Tarot Cards</span>
             </div>
           </div>
 
-          {/* CTA */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+          {/* Mystical Features Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto mt-8">
+            <Button
+              size="lg"
+              onClick={() => navigate("/daily-reading")}
+              className="bg-gradient-to-br from-purple-600/20 to-indigo-800/20 border-2 border-purple-500/50 hover:border-purple-500 text-purple-200 hover:bg-purple-600/30 font-cinzel font-bold text-base px-6 py-4 h-auto flex flex-col items-center gap-2 transition-all hover:scale-105 hover:shadow-[0_0_30px_hsl(270_70%_60%/0.4)]"
+            >
+              <ScrollText className="w-6 h-6" />
+              <span>Daily Tarot Reading</span>
+              <span className="text-xs text-purple-300/80 font-normal">Discover your destiny</span>
+            </Button>
+            
+            <Button
+              size="lg"
+              onClick={() => navigate("/sanctuary/stones")}
+              className="bg-gradient-to-br from-amber-600/20 to-yellow-800/20 border-2 border-amber-500/50 hover:border-amber-500 text-amber-200 hover:bg-amber-600/30 font-cinzel font-bold text-base px-6 py-4 h-auto flex flex-col items-center gap-2 transition-all hover:scale-105 hover:shadow-[0_0_30px_hsl(45_85%_60%/0.4)]"
+            >
+              <Gem className="w-6 h-6" />
+              <span>Spiritual Stones</span>
+              <span className="text-xs text-amber-300/80 font-normal">Unlock mystical power</span>
+            </Button>
+            
+            <Button
+              size="lg"
+              onClick={() => navigate("/sanctuary/merch")}
+              className="bg-gradient-to-br from-emerald-600/20 to-teal-800/20 border-2 border-emerald-500/50 hover:border-emerald-500 text-emerald-200 hover:bg-emerald-600/30 font-cinzel font-bold text-base px-6 py-4 h-auto flex flex-col items-center gap-2 transition-all hover:scale-105 hover:shadow-[0_0_30px_hsl(160_70%_60%/0.4)]"
+            >
+              <ShoppingBag className="w-6 h-6" />
+              <span>Merch & Relics</span>
+              <span className="text-xs text-emerald-300/80 font-normal">Collect sacred items</span>
+            </Button>
+          </div>
+
+          {/* Friends Tarot Section */}
+          <div className="mt-8 p-6 rounded-xl bg-gaming-dark/60 backdrop-blur-sm border border-premium-gold/30 max-w-2xl mx-auto">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <Heart className="w-6 h-6 text-premium-gold animate-pulse" />
+              <h3 className="text-xl font-cinzel font-bold text-premium-gold">Share Your Reading</h3>
+              <Heart className="w-6 h-6 text-premium-gold animate-pulse" />
+            </div>
+            <p className="text-center text-papyrus/70 font-crimson mb-4">
+              Connect with friends and share your daily tarot readings. Discover how the collective energy flows through your circle.
+            </p>
+            <Button
+              onClick={() => navigate("/community/feed")}
+              className="w-full bg-gradient-to-r from-pink-600/20 to-rose-800/20 border-2 border-pink-500/50 hover:border-pink-500 text-pink-200 hover:bg-pink-600/30 font-cinzel font-bold"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Join Friends Tarot Circle
+            </Button>
+          </div>
+
+          {/* Main CTA */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
             <Button
               size="lg"
               onClick={() => navigate("/auth")}
-              className="bg-gradient-to-r from-premium-gold to-ancient-bronze text-gaming-dark hover:opacity-90 font-cinzel font-bold text-lg px-8 py-6 glow-gold"
+              className="bg-gradient-to-r from-premium-gold to-ancient-bronze text-gaming-dark hover:opacity-90 font-cinzel font-bold text-lg px-8 py-6 glow-gold hover:scale-105 transition-transform"
             >
               <Eye className="w-5 h-5 mr-2" />
               Claim Your Destiny
@@ -163,8 +231,9 @@ export const LaunchHypeBanner = () => {
               size="lg"
               variant="outline"
               onClick={() => navigate("/fair-play")}
-              className="border-papyrus/30 text-papyrus hover:bg-papyrus/10 font-cinzel font-bold text-lg px-8 py-6"
+              className="border-papyrus/30 text-papyrus hover:bg-papyrus/10 font-cinzel font-bold text-lg px-8 py-6 hover:scale-105 transition-transform"
             >
+              <ScrollText className="w-5 h-5 mr-2" />
               Read the Scrolls
             </Button>
           </div>
