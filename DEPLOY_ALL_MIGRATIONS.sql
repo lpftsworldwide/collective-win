@@ -219,7 +219,6 @@ BEGIN
     max_bet_aud = EXCLUDED.max_bet_aud,
     is_demo_available = false, -- Real money only
     updated_at = now();
-    updated_at = now();
 END $$;
 
 -- =====================================================
