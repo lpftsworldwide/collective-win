@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS public.licensed_games (
   status TEXT NOT NULL DEFAULT 'active',
   min_bet_aud NUMERIC(12,2) NOT NULL DEFAULT 0.20,
   max_bet_aud NUMERIC(12,2) NOT NULL DEFAULT 1000.00,
-  is_demo_available BOOLEAN DEFAULT false,
+  is_demo_available BOOLEAN DEFAULT false, -- Legacy field, always false for real money
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
@@ -210,7 +210,7 @@ ON CONFLICT (game_code) DO UPDATE
     status = EXCLUDED.status,
     min_bet_aud = EXCLUDED.min_bet_aud,
     max_bet_aud = EXCLUDED.max_bet_aud,
-    is_demo_available = false; -- Real money only
+    is_demo_available = false; -- Real money only - no demo mode
 
 -- =====================================================
 -- MIGRATION 2: ADMIN USERS TABLE FOR MASTER MODE
