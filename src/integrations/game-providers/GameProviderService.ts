@@ -91,10 +91,10 @@ class GameProviderService {
   /**
    * Check if provider is available
    */
-  isProviderAvailable(code: GameProviderCode): boolean {
-    const config = this.configs.get(code);
-    return config?.status === 'active' ?? false;
-  }
+    isProviderAvailable(code: GameProviderCode): boolean {
+      const config = this.configs.get(code);
+      return (config?.status === 'active') || false;
+    }
 
   /**
    * Get all available providers

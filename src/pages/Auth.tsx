@@ -138,6 +138,7 @@ const Auth = () => {
       });
 
       // Set redirect URL to email confirmation handler
+      // Support both production and localhost
       const redirectUrl = `${window.location.origin}/auth/confirm`;
 
       const { data, error } = await supabase.auth.signUp({

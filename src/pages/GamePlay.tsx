@@ -97,28 +97,12 @@ const GamePlay = () => {
     }
   }, [user, navigate]);
 
-  // Load licensed game if available
+  // ALL GAMES USE LOCAL ENGINE - No external providers needed!
+  // Skip provider check and use local slot machine engine
   useEffect(() => {
-    if (licensedGame && licensedGame.provider) {
-      const providerCodeMap: Record<string, GameProviderCode> = {
-        'JILI': 'jili',
-        'Boomberg': 'boomberg',
-        'Pragmatic Play': 'pragmatic',
-        'NetEnt': 'netent',
-        'Evolution Gaming': 'evolution',
-        'Playson': 'playson',
-        'BGaming': 'bgaming',
-        'Hacksaw Gaming': 'hacksaw',
-      };
-      
-      const code = providerCodeMap[licensedGame.provider.name] || 'collective-wins';
-      setProviderCode(code as GameProviderCode);
-      
-      // Auto-launch licensed game
-      if (licensedGame.status === 'active') {
-        setShowLicensedGame(true);
-      }
-    }
+    // Always use local engine for all games
+    setShowLicensedGame(false);
+    setProviderCode(null);
   }, [licensedGame]);
 
   // Play sounds when outcome changes
@@ -335,7 +319,8 @@ const GamePlay = () => {
   };
 
   // Show play button for licensed games
-  if (licensedGame && !showLicensedGame) {
+  // Use local engine for all games
+  if (licensedGame) {
     return (
       <div className="min-h-screen bg-background relative">
         <div className="fixed inset-0 pointer-events-none">

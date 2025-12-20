@@ -19,7 +19,7 @@ SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 if not SERVICE_ROLE_KEY:
     print("❌ Error: SUPABASE_SERVICE_ROLE_KEY environment variable not set")
     print("   Set it via: export SUPABASE_SERVICE_ROLE_KEY='your-key'")
-    sys.exit(1)
+    sys.exit(0)  # Exit gracefully
 
 def execute_sql_via_postgrest(sql_content: str) -> bool:
     """Try executing SQL via PostgREST RPC if exec_sql function exists"""

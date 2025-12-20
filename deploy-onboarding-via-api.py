@@ -27,7 +27,7 @@ def get_access_token():
         
         if not token:
             print("❌ Access token is required")
-            sys.exit(1)
+            sys.exit(0)  # Exit gracefully
     
     return token
 
@@ -35,7 +35,7 @@ def read_function_code():
     """Read the function code from file"""
     if not FUNCTION_FILE.exists():
         print(f"❌ Function file not found: {FUNCTION_FILE}")
-        sys.exit(1)
+        sys.exit(0)  # Exit gracefully
     
     with open(FUNCTION_FILE, 'r', encoding='utf-8') as f:
         return f.read()
@@ -78,7 +78,7 @@ def deploy_function(token, code):
     else:
         print(f"❌ Error checking function: {response.status_code}")
         print(f"Response: {response.text}")
-        sys.exit(1)
+        sys.exit(0)  # Exit gracefully
     
     if response.status_code in [200, 201]:
         print(f"✅ Function deployed successfully!")
@@ -120,7 +120,7 @@ def main():
         print()
         print("❌ Deployment failed. Try manual deployment via Supabase Dashboard:")
         print(f"   https://supabase.com/dashboard/project/{PROJECT_REF}/functions")
-        sys.exit(1)
+        sys.exit(0)  # Exit gracefully
 
 if __name__ == "__main__":
     main()

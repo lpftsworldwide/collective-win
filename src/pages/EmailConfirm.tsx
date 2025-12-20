@@ -17,33 +17,45 @@ const EmailConfirm = () => {
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
-        // Get token from URL
-        const token = searchParams.get("token");
-        const type = searchParams.get("type");
-        const tokenHash = searchParams.get("token_hash");
+        // FIRST: Check URL hash for Supabase redirect tokens (most common)
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get("access_token");
+        const refreshToken = hashParams.get("refresh_token");
+        const type = hashParams.get("type");
 
-        if (!token && !tokenHash) {
-          // Try to exchange session from URL hash
-          const hashParams = new URLSearchParams(window.location.hash.substring(1));
-          const accessToken = hashParams.get("access_token");
-          const refreshToken = hashParams.get("refresh_token");
+        console.log("EmailConfirm: Checking hash params", { 
+          hasAccessToken: !!accessToken, 
+          hasRefreshToken: !!refreshToken,
+          hash: window.location.hash.substring(0, 50)
+        });
 
-          if (accessToken && refreshToken) {
-            // Set session from URL hash
-            const { error: sessionError } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
+        if (accessToken && refreshToken) {
+          console.log("EmailConfirm: Setting session from hash");
+          // Set session from URL hash (Supabase email confirmation)
+          const { data: { session }, error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+
+          if (sessionError) {
+            console.error("Session error:", sessionError);
+            setStatus("error");
+            toast({
+              title: "Verification Failed",
+              description: sessionError.message || "Failed to verify email. Please try the link again.",
+              variant: "destructive",
             });
+            return;
+          }
 
-            if (sessionError) {
-              console.error("Session error:", sessionError);
-              setStatus("error");
-              return;
-            }
-
+          if (session) {
+            console.log("EmailConfirm: Session set successfully", session.user.email);
             // Success - user is now confirmed
             setStatus("success");
             setShowConfetti(true);
+            
+            // Clear hash from URL
+            window.history.replaceState({}, document.title, window.location.pathname);
             
             // Claim bonus
             await claimWelcomeBonus();
@@ -61,12 +73,29 @@ const EmailConfirm = () => {
           }
         }
 
+        // SECOND: Check query params for token/token_hash (alternative method)
+        const token = searchParams.get("token");
+        const tokenHash = searchParams.get("token_hash");
+        const typeParam = searchParams.get("type") || type;
+
+        console.log("EmailConfirm: Checking query params", { 
+          hasToken: !!token, 
+          hasTokenHash: !!tokenHash,
+          typeParam 
+        });
+
         // If we have token/token_hash, verify email
         if (tokenHash || token) {
-          const { error: verifyError } = await supabase.auth.verifyOtp({
+          console.log("EmailConfirm: Verifying OTP");
+          // Only use email-related types for email verification
+          const otpType = (typeParam === "signup" || typeParam === "email" || typeParam === "recovery" || typeParam === "invite" || typeParam === "magiclink" || typeParam === "email_change") 
+            ? typeParam as "email" | "signup" | "recovery" | "invite" | "magiclink" | "email_change"
+            : "email";
+          
+          const { data, error: verifyError } = await supabase.auth.verifyOtp({
             token_hash: tokenHash || undefined,
             token: token || undefined,
-            type: (type as any) || "email",
+            type: otpType,
           });
 
           if (verifyError) {
@@ -74,36 +103,47 @@ const EmailConfirm = () => {
             setStatus("error");
             toast({
               title: "Verification Failed",
-              description: verifyError.message,
+              description: verifyError.message || "Invalid or expired confirmation link. Please request a new one.",
               variant: "destructive",
             });
             return;
           }
 
-          // Success
-          setStatus("success");
-          setShowConfetti(true);
-          
-          // Claim bonus
-          await claimWelcomeBonus();
-          
-          toast({
-            title: "Email Confirmed! 🎉",
-            description: "Your account is now active. Welcome bonus claimed!",
-          });
+          if (data?.session) {
+            console.log("EmailConfirm: OTP verified, session created", data.session.user.email);
+            // Success
+            setStatus("success");
+            setShowConfetti(true);
+            
+            // Claim bonus
+            await claimWelcomeBonus();
+            
+            toast({
+              title: "Email Confirmed! 🎉",
+              description: "Your account is now active. Welcome bonus claimed!",
+            });
 
-          // Redirect to home after 3 seconds
-          setTimeout(() => {
-            navigate("/");
-          }, 3000);
+            // Redirect to home after 3 seconds
+            setTimeout(() => {
+              navigate("/");
+            }, 3000);
+          }
         } else {
-          // No token found - might already be confirmed
+          // No token found - check if already logged in
+          console.log("EmailConfirm: No tokens found, checking existing session");
           const { data: { session } } = await supabase.auth.getSession();
           if (session) {
+            console.log("EmailConfirm: Already has session", session.user.email);
             setStatus("success");
             navigate("/");
           } else {
+            console.log("EmailConfirm: No session found, showing error");
             setStatus("error");
+            toast({
+              title: "No Confirmation Link Found",
+              description: "Please check your email for the confirmation link, or request a new one.",
+              variant: "destructive",
+            });
           }
         }
       } catch (error) {

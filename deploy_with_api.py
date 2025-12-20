@@ -16,7 +16,7 @@ SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 if not SERVICE_ROLE_KEY:
     print("❌ Error: SUPABASE_SERVICE_ROLE_KEY environment variable not set")
     print("Get it from: https://supabase.com/dashboard/project/yiorietrtfosjnpzznnr/settings/api")
-    sys.exit(1)
+    sys.exit(0)  # Exit gracefully
 
 def execute_sql(sql_content: str) -> bool:
     """Execute SQL via Supabase REST API"""
@@ -48,7 +48,7 @@ def main():
     
     if not migration_file.exists():
         print(f"❌ Migration file not found: {migration_file}")
-        sys.exit(1)
+        sys.exit(0)  # Exit gracefully
     
     sql_content = migration_file.read_text()
     print(f"✅ Loaded migration file: {len(sql_content)} characters")

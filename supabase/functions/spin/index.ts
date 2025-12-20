@@ -100,6 +100,228 @@ const GAME_CONFIGS: Record<string, { symbolWeights: SymbolWeight[]; reelLayout: 
     ],
     reelLayout: { reels: 6, rows: 5 }, // Tumble game
   },
+  // Royal Reels Games
+  'gates-of-olympus-super-scatter': {
+    symbolWeights: [
+      { id: 'wild', name: 'Zeus', weight: 5, type: 'wild' },
+      { id: 'scatter', name: 'Super Scatter', weight: 8, type: 'scatter' },
+      { id: 'high1', name: 'Gem', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Crown', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Vase', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 6, rows: 5 }, // Tumble game with super scatter
+  },
+  'brick-house-bonanza': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 3, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 5, type: 'scatter' },
+      { id: 'high1', name: 'Brick', weight: 10, type: 'normal' },
+      { id: 'high2', name: 'House', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Gold', weight: 20, type: 'normal' },
+      { id: 'low1', name: 'Cherry', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'Grape', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Watermelon', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 6, rows: 5 }, // Tumble game
+  },
+  'sweet-bonanza-1000': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 3, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 5, type: 'scatter' },
+      { id: 'high1', name: 'Bomb', weight: 10, type: 'normal' },
+      { id: 'high2', name: 'Candy', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Lollipop', weight: 20, type: 'normal' },
+      { id: 'low1', name: 'Cherry', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'Grape', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Watermelon', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 6, rows: 5 }, // Tumble game
+  },
+  'sweet-bonanza-super-scatter': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 3, type: 'wild' },
+      { id: 'scatter', name: 'Super Scatter', weight: 7, type: 'scatter' },
+      { id: 'high1', name: 'Bomb', weight: 10, type: 'normal' },
+      { id: 'high2', name: 'Candy', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Lollipop', weight: 20, type: 'normal' },
+      { id: 'low1', name: 'Cherry', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'Grape', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Watermelon', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 6, rows: 5 }, // Tumble game
+  },
+  'sweet-rush-bonanza': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 3, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 5, type: 'scatter' },
+      { id: 'high1', name: 'Bomb', weight: 10, type: 'normal' },
+      { id: 'high2', name: 'Candy', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Lollipop', weight: 20, type: 'normal' },
+      { id: 'low1', name: 'Cherry', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'Grape', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Watermelon', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 6, rows: 5 }, // Tumble game
+  },
+  'big-bass-amazon-xtreme': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 4, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 6, type: 'scatter' },
+      { id: 'high1', name: 'Fish', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Bass', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Amazon', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 }, // Fishing game
+  },
+  'big-bass-halloween-3': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 4, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 6, type: 'scatter' },
+      { id: 'high1', name: 'Pumpkin', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Ghost', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Fish', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 }, // Fishing game
+  },
+  'big-bass-reel-repeat': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 4, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 6, type: 'scatter' },
+      { id: 'high1', name: 'Fish', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Bass', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Reel', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 }, // Fishing game
+  },
+  'big-bass-bonanza-1000': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 4, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 6, type: 'scatter' },
+      { id: 'high1', name: 'Fish', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Bass', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Bonanza', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 }, // Fishing game
+  },
+  'sleeping-dragon': {
+    symbolWeights: [
+      { id: 'wild', name: 'Dragon', weight: 4, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 6, type: 'scatter' },
+      { id: 'high1', name: 'Gem', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Crown', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Treasure', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 },
+  },
+  'chests-of-cai-shen': {
+    symbolWeights: [
+      { id: 'wild', name: 'Cai Shen', weight: 4, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 6, type: 'scatter' },
+      { id: 'high1', name: 'Chest', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Gold', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Coin', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 },
+  },
+  '3-super-hot-chillies': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 5, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 8, type: 'scatter' },
+      { id: 'high1', name: 'Chilli', weight: 15, type: 'normal' },
+      { id: 'high2', name: 'Pepper', weight: 20, type: 'normal' },
+      { id: 'high3', name: 'Fire', weight: 25, type: 'normal' },
+      { id: 'low1', name: 'Cherry', weight: 35, type: 'normal' },
+      { id: 'low2', name: 'Lemon', weight: 40, type: 'normal' },
+      { id: 'low3', name: 'Orange', weight: 45, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 }, // Classic 3-reel style
+  },
+  '3-coin-volcanoes': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 5, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 8, type: 'scatter' },
+      { id: 'high1', name: 'Coin', weight: 15, type: 'normal' },
+      { id: 'high2', name: 'Volcano', weight: 20, type: 'normal' },
+      { id: 'high3', name: 'Gem', weight: 25, type: 'normal' },
+      { id: 'low1', name: 'Cherry', weight: 35, type: 'normal' },
+      { id: 'low2', name: 'Lemon', weight: 40, type: 'normal' },
+      { id: 'low3', name: 'Orange', weight: 45, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 },
+  },
+  'more-magic-apple': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 4, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 6, type: 'scatter' },
+      { id: 'high1', name: 'Apple', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Magic', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Star', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 },
+  },
+  'buffalo-power-2-hold-and-win': {
+    symbolWeights: [
+      { id: 'wild', name: 'Buffalo', weight: 4, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 6, type: 'scatter' },
+      { id: 'high1', name: 'Buffalo', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Eagle', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Wolf', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 }, // Hold and Win mechanic
+  },
+  'thunder-coins-hold-and-win': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 4, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 6, type: 'scatter' },
+      { id: 'high1', name: 'Coin', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Thunder', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Lightning', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 }, // Hold and Win mechanic
+  },
+  'bonza-bucks-hold-and-win-extreme-10000': {
+    symbolWeights: [
+      { id: 'wild', name: 'Wild', weight: 4, type: 'wild' },
+      { id: 'scatter', name: 'Scatter', weight: 6, type: 'scatter' },
+      { id: 'high1', name: 'Bucks', weight: 12, type: 'normal' },
+      { id: 'high2', name: 'Gold', weight: 15, type: 'normal' },
+      { id: 'high3', name: 'Diamond', weight: 18, type: 'normal' },
+      { id: 'low1', name: 'A', weight: 30, type: 'normal' },
+      { id: 'low2', name: 'K', weight: 35, type: 'normal' },
+      { id: 'low3', name: 'Q', weight: 40, type: 'normal' },
+    ],
+    reelLayout: { reels: 5, rows: 3 }, // Hold and Win Extreme
+  },
 };
 
 // Get game config or default
