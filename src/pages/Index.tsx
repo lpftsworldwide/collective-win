@@ -13,12 +13,10 @@ import { SignupBonusBanner } from "@/components/SignupBonusBanner";
 import { VIPCard } from "@/components/VIPCard";
 import { LiveTransactionsFeed } from "@/components/LiveTransactionsFeed";
 import { RTPMarketingBanner } from "@/components/RTPMarketingBanner";
-import { LiveCommunityFeed } from "@/components/LiveCommunityFeed";
 import { GameLeaderboard } from "@/components/GameLeaderboard";
 import { Footer } from "@/components/Footer";
 import { TarotLoreBanner } from "@/components/TarotLoreBanner";
 import { RewardsShowcase } from "@/components/RewardsShowcase";
-import { NFTRewardSystem } from "@/components/NFTRewardSystem";
 // Removed DemoBanner - this is a REAL MONEY platform
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -126,11 +124,29 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate("/community")}
+                onClick={() => navigate("/community/feed")}
                 className="text-turquoise hover:bg-turquoise/10"
               >
                 <Users className="w-4 h-4 mr-1" />
                 Community
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/nfts")}
+                className="text-premium-gold hover:bg-premium-gold/10"
+              >
+                <Sparkles className="w-4 h-4 mr-1" />
+                NFTs
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/daily-reading")}
+                className="text-premium-gold hover:bg-premium-gold/10"
+              >
+                <ScrollText className="w-4 h-4 mr-1" />
+                Daily Reading
               </Button>
               
               {user ? (
@@ -204,11 +220,6 @@ const Index = () => {
         {/* Rewards Showcase */}
         <RewardsShowcase />
 
-        {/* NFT Reward System (Tier Upgrade Perks) */}
-        <section className="container mx-auto px-4 py-8">
-          <NFTRewardSystem />
-        </section>
-
         {/* Live Transactions + VIP Section */}
         <section className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -224,12 +235,9 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Live Community Feed + Winners Leaderboard */}
+        {/* Winners Leaderboard with Animated Simulation */}
         <section className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <LiveCommunityFeed />
-            <WinnersLeaderboard />
-          </div>
+          <WinnersLeaderboard />
         </section>
 
         {/* Game Leaderboard */}

@@ -21,6 +21,9 @@ import Withdraw from "./pages/Withdraw";
 import Rewards from "./pages/Rewards";
 import Raffle from "./pages/Raffle";
 import Community from "./pages/Community";
+import CommunityFeed from "./pages/CommunityFeed";
+import NFTs from "./pages/NFTs";
+import DailyReading from "./pages/DailyReading";
 import VIPClub from "./pages/VIPClub";
 import Disclosure from "./pages/Disclosure";
 import AdminDemoIntegrity from "./pages/AdminDemoIntegrity";
@@ -53,6 +56,9 @@ const App = () => (
             <Route path="/rewards" element={<Rewards />} />
             <Route path="/raffle" element={<Raffle />} />
             <Route path="/community" element={<Community />} />
+            <Route path="/community/feed" element={<CommunityFeed />} />
+            <Route path="/nfts" element={<NFTs />} />
+            <Route path="/daily-reading" element={<DailyReading />} />
             <Route path="/vip" element={<VIPClub />} />
             <Route path="/disclosure" element={<Disclosure />} />
             <Route path="/admin/demo-integrity" element={<AdminDemoIntegrity />} />
