@@ -4,356 +4,764 @@
     "title": "Starlight Princess 1000",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Tumble"
+    "type": "Tumble",
+    "tags": [
+      "Tumble",
+      "Cascading"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1075.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "gates-of-olympus",
     "title": "Gates of Olympus",
     "rtp": 97.1,
     "vol": "Extreme",
-    "type": "Scatter"
+    "type": "Scatter",
+    "tags": [
+      "Scatter",
+      "Free Spins"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1520.0,
+    "featured": true,
+    "provider": "collective-wins"
   },
   {
     "slug": "gates-of-olympus-super-scatter",
     "title": "Gates of Olympus Super Scatter",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Tumble"
+    "type": "Tumble",
+    "tags": [
+      "Tumble",
+      "Cascading"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1075.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "3-hot-chillies",
     "title": "3 Hot Chillies",
     "rtp": 96.4,
     "vol": "Medium",
-    "type": "HoldAndWin"
+    "type": "HoldAndWin",
+    "tags": [
+      "Hold & Win",
+      "Multiplier"
+    ],
+    "is_hot": false,
+    "jackpot_value": 768.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "3-super-hot-chillies",
     "title": "3 Super Hot Chillies",
     "rtp": 96.0,
     "vol": "High",
-    "type": "HoldAndWin"
+    "type": "HoldAndWin",
+    "tags": [
+      "Hold & Win",
+      "Multiplier"
+    ],
+    "is_hot": false,
+    "jackpot_value": 900.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "brick-house",
     "title": "Brick House Bonanza",
     "rtp": 96.8,
     "vol": "High",
-    "type": "Megaways"
+    "type": "Megaways",
+    "tags": [
+      "Megaways",
+      "Ways to Win"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1220.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "brick-house-bonanza",
     "title": "Brick House Bonanza",
     "rtp": 96.48,
     "vol": "Medium",
-    "type": "Tumble"
+    "type": "Tumble",
+    "tags": [
+      "Tumble",
+      "Cascading"
+    ],
+    "is_hot": false,
+    "jackpot_value": 877.6,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "sweet-bonanza",
     "title": "Sweet Bonanza",
     "rtp": 96.6,
     "vol": "High",
-    "type": "Tumble"
+    "type": "Tumble",
+    "tags": [
+      "Tumble",
+      "Cascading"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1090.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "sweet-bonanza-1000",
     "title": "Sweet Bonanza 1000",
     "rtp": 96.48,
     "vol": "Medium",
-    "type": "Tumble"
+    "type": "Tumble",
+    "tags": [
+      "Tumble",
+      "Cascading"
+    ],
+    "is_hot": false,
+    "jackpot_value": 877.6,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "sweet-bonanza-super-scatter",
     "title": "Sweet Bonanza Super Scatter",
     "rtp": 96.48,
     "vol": "Medium",
-    "type": "Tumble"
+    "type": "Tumble",
+    "tags": [
+      "Tumble",
+      "Cascading"
+    ],
+    "is_hot": false,
+    "jackpot_value": 877.6,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "sweet-rush-bonanza",
     "title": "Sweet Rush Bonanza",
     "rtp": 96.48,
     "vol": "Medium",
-    "type": "Tumble"
+    "type": "Tumble",
+    "tags": [
+      "Tumble",
+      "Cascading"
+    ],
+    "is_hot": false,
+    "jackpot_value": 877.6,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "sugar-rush",
     "title": "Sugar Rush 1000",
     "rtp": 97.5,
     "vol": "Extreme",
-    "type": "Cluster"
+    "type": "Cluster",
+    "tags": [
+      "Cluster Pays",
+      "Tumble"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1500.0,
+    "featured": true,
+    "provider": "collective-wins"
   },
   {
     "slug": "wolf-gold",
     "title": "Wolf Gold Replicated",
     "rtp": 96.0,
     "vol": "Medium",
-    "type": "HoldAndWin"
+    "type": "HoldAndWin",
+    "tags": [
+      "Hold & Win",
+      "Multiplier"
+    ],
+    "is_hot": false,
+    "jackpot_value": 720.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "big-bass",
     "title": "Big Bass Steel Edition",
     "rtp": 96.7,
     "vol": "Medium",
-    "type": "Collect"
+    "type": "Collect",
+    "tags": [
+      "Collect",
+      "Fishing"
+    ],
+    "is_hot": true,
+    "jackpot_value": 804.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "big-bass-splash",
     "title": "Big Bass Splash",
     "rtp": 96.71,
     "vol": "High",
-    "type": "Collect"
+    "type": "Collect",
+    "tags": [
+      "Collect",
+      "Fishing"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1006.5,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "big-bass-amazon-xtreme",
     "title": "Big Bass Amazon Xtreme",
     "rtp": 96.71,
     "vol": "High",
-    "type": "Collect"
+    "type": "Collect",
+    "tags": [
+      "Collect",
+      "Fishing"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1006.5,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "big-bass-halloween-3",
     "title": "Big Bass Halloween 3",
     "rtp": 96.71,
     "vol": "High",
-    "type": "Collect"
+    "type": "Collect",
+    "tags": [
+      "Collect",
+      "Fishing"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1006.5,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "big-bass-reel-repeat",
     "title": "Big Bass Reel Repeat",
     "rtp": 96.71,
     "vol": "High",
-    "type": "Collect"
+    "type": "Collect",
+    "tags": [
+      "Collect",
+      "Fishing"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1006.5,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "big-bass-bonanza-1000",
     "title": "Big Bass Bonanza 1000",
     "rtp": 96.71,
     "vol": "High",
-    "type": "Collect"
+    "type": "Collect",
+    "tags": [
+      "Collect",
+      "Fishing"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1006.5,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "sleeping-dragon",
     "title": "Sleeping Dragon",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Scatter"
+    "type": "Scatter",
+    "tags": [
+      "Scatter",
+      "Free Spins"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1075.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "chests-of-cai-shen",
     "title": "Chests of Cai Shen",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Scatter"
+    "type": "Scatter",
+    "tags": [
+      "Scatter",
+      "Free Spins"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1075.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "buffalo-power-2-hold-and-win",
     "title": "Buffalo Power 2: Hold and Win",
     "rtp": 96.5,
     "vol": "High",
-    "type": "HoldAndWin"
+    "type": "HoldAndWin",
+    "tags": [
+      "Hold & Win",
+      "Multiplier"
+    ],
+    "is_hot": true,
+    "jackpot_value": 975.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "thunder-coins-hold-and-win",
     "title": "Thunder Coins: Hold and Win",
     "rtp": 96.5,
     "vol": "High",
-    "type": "HoldAndWin"
+    "type": "HoldAndWin",
+    "tags": [
+      "Hold & Win",
+      "Multiplier"
+    ],
+    "is_hot": true,
+    "jackpot_value": 975.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "3-coin-volcanoes",
     "title": "3 Coin Volcanoes",
     "rtp": 96.0,
     "vol": "High",
-    "type": "HoldAndWin"
+    "type": "HoldAndWin",
+    "tags": [
+      "Hold & Win",
+      "Multiplier"
+    ],
+    "is_hot": false,
+    "jackpot_value": 900.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "more-magic-apple",
     "title": "More Magic Apple",
     "rtp": 96.0,
     "vol": "Medium",
-    "type": "Classic"
+    "type": "Classic",
+    "tags": [
+      "Classic",
+      "Traditional"
+    ],
+    "is_hot": false,
+    "jackpot_value": 720.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "bonza-bucks-hold-and-win-extreme-10000",
     "title": "Bonza Bucks Hold and Win Extreme 10000",
     "rtp": 96.5,
     "vol": "High",
-    "type": "HoldAndWin"
+    "type": "HoldAndWin",
+    "tags": [
+      "Hold & Win",
+      "Multiplier"
+    ],
+    "is_hot": true,
+    "jackpot_value": 975.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "ancient-aztec-gold",
     "title": "Ancient Aztec Gold",
     "rtp": 96.0,
     "vol": "High",
-    "type": "Scatter"
+    "type": "Scatter",
+    "tags": [
+      "Scatter",
+      "Free Spins"
+    ],
+    "is_hot": false,
+    "jackpot_value": 1000.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "egypt-fire",
     "title": "Egypt Fire: Hold and Win",
     "rtp": 96.5,
     "vol": "High",
-    "type": "HoldAndWin"
+    "type": "HoldAndWin",
+    "tags": [
+      "Hold & Win",
+      "Multiplier"
+    ],
+    "is_hot": true,
+    "jackpot_value": 975.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "golden-pharaoh-megaways",
     "title": "Golden Pharaoh Megaways",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Megaways"
+    "type": "Megaways",
+    "tags": [
+      "Megaways",
+      "Ways to Win"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1175.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "crystal-fortune-deluxe",
     "title": "Crystal Fortune Deluxe",
     "rtp": 96.0,
     "vol": "Medium",
-    "type": "Classic"
+    "type": "Classic",
+    "tags": [
+      "Classic",
+      "Traditional"
+    ],
+    "is_hot": false,
+    "jackpot_value": 720.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "blackjack-royal-vip",
     "title": "Blackjack Royal VIP",
     "rtp": 99.5,
     "vol": "Low",
-    "type": "Table"
+    "type": "Table",
+    "tags": [
+      "Table Game",
+      "RNG"
+    ],
+    "is_hot": true,
+    "jackpot_value": 950.0,
+    "featured": true,
+    "provider": "collective-wins"
   },
   {
     "slug": "dragons-fire-prosperity",
     "title": "Dragon's Fire Prosperity",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Scatter"
+    "type": "Scatter",
+    "tags": [
+      "Scatter",
+      "Free Spins"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1075.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "lightning-strike-roulette",
     "title": "Lightning Strike Roulette",
     "rtp": 97.3,
     "vol": "Medium",
-    "type": "Table"
+    "type": "Table",
+    "tags": [
+      "Table Game",
+      "RNG"
+    ],
+    "is_hot": true,
+    "jackpot_value": 876.0,
+    "featured": true,
+    "provider": "collective-wins"
   },
   {
     "slug": "wild-west-bounty-hunter",
     "title": "Wild West Bounty Hunter",
     "rtp": 96.0,
     "vol": "High",
-    "type": "Scatter"
+    "type": "Scatter",
+    "tags": [
+      "Scatter",
+      "Free Spins"
+    ],
+    "is_hot": false,
+    "jackpot_value": 1000.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "mega-fortune-jackpot-king",
     "title": "Mega Fortune Jackpot King",
     "rtp": 96.0,
     "vol": "Extreme",
-    "type": "Jackpot"
+    "type": "Jackpot",
+    "tags": [
+      "Jackpot",
+      "Progressive"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1700.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "baccarat-royale-supreme",
     "title": "Baccarat Royale Supreme",
     "rtp": 98.9,
     "vol": "Low",
-    "type": "Table"
+    "type": "Table",
+    "tags": [
+      "Table Game",
+      "RNG"
+    ],
+    "is_hot": true,
+    "jackpot_value": 890.0,
+    "featured": true,
+    "provider": "collective-wins"
   },
   {
     "slug": "viking-conquest-saga",
     "title": "Viking Conquest Saga",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Scatter"
+    "type": "Scatter",
+    "tags": [
+      "Scatter",
+      "Free Spins"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1075.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "crash-rocket-multiplier",
     "title": "Crash Rocket Multiplier",
     "rtp": 97.0,
     "vol": "Extreme",
-    "type": "Crash"
+    "type": "Crash",
+    "tags": [
+      "Crash",
+      "Multiplier"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1400.0,
+    "featured": true,
+    "provider": "collective-wins"
   },
   {
     "slug": "diamond-dynasty-deluxe",
     "title": "Diamond Dynasty Deluxe",
     "rtp": 96.0,
     "vol": "Medium",
-    "type": "Classic"
+    "type": "Classic",
+    "tags": [
+      "Classic",
+      "Traditional"
+    ],
+    "is_hot": false,
+    "jackpot_value": 720.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "fruit-blitz-super-spin",
     "title": "Fruit Blitz Super Spin",
     "rtp": 96.0,
     "vol": "Medium",
-    "type": "Classic"
+    "type": "Classic",
+    "tags": [
+      "Classic",
+      "Traditional"
+    ],
+    "is_hot": false,
+    "jackpot_value": 720.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "pirates-plunder-megaways",
     "title": "Pirate's Plunder Megaways",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Megaways"
+    "type": "Megaways",
+    "tags": [
+      "Megaways",
+      "Ways to Win"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1175.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "starburst-crystal-classic",
     "title": "Starburst Crystal Classic",
     "rtp": 96.1,
     "vol": "Low",
-    "type": "Classic"
+    "type": "Classic",
+    "tags": [
+      "Classic",
+      "Traditional"
+    ],
+    "is_hot": false,
+    "jackpot_value": 610.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "moon-princess-trinity",
     "title": "Moon Princess Trinity",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Tumble"
+    "type": "Tumble",
+    "tags": [
+      "Tumble",
+      "Cascading"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1075.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "zeus-power-reels",
     "title": "Zeus Power Reels",
     "rtp": 96.0,
     "vol": "High",
-    "type": "Scatter"
+    "type": "Scatter",
+    "tags": [
+      "Scatter",
+      "Free Spins"
+    ],
+    "is_hot": false,
+    "jackpot_value": 1000.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "cosmic-gems-cluster",
     "title": "Cosmic Gems Cluster",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Cluster"
+    "type": "Cluster",
+    "tags": [
+      "Cluster Pays",
+      "Tumble"
+    ],
+    "is_hot": true,
+    "jackpot_value": 975.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "buffalo-thunder-lightning",
     "title": "Buffalo Thunder Lightning",
     "rtp": 96.0,
     "vol": "High",
-    "type": "HoldAndWin"
+    "type": "HoldAndWin",
+    "tags": [
+      "Hold & Win",
+      "Multiplier"
+    ],
+    "is_hot": false,
+    "jackpot_value": 900.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "sugar-rush-candy-blitz",
     "title": "Sugar Rush Candy Blitz",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Tumble"
+    "type": "Tumble",
+    "tags": [
+      "Tumble",
+      "Cascading"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1075.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "egyptian-mysteries-unlimited",
     "title": "Egyptian Mysteries Unlimited",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Megaways"
+    "type": "Megaways",
+    "tags": [
+      "Megaways",
+      "Ways to Win"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1175.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "legend-of-cleopatra",
     "title": "Legend of Cleopatra",
     "rtp": 96.0,
     "vol": "High",
-    "type": "Scatter"
+    "type": "Scatter",
+    "tags": [
+      "Scatter",
+      "Free Spins"
+    ],
+    "is_hot": false,
+    "jackpot_value": 1000.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "oceans-treasure-quest",
     "title": "Ocean's Treasure Quest",
     "rtp": 96.5,
     "vol": "High",
-    "type": "Scatter"
+    "type": "Scatter",
+    "tags": [
+      "Scatter",
+      "Free Spins"
+    ],
+    "is_hot": true,
+    "jackpot_value": 1075.0,
+    "featured": false,
+    "provider": "collective-wins"
   },
   {
     "slug": "neon-city-nights",
     "title": "Neon City Nights",
     "rtp": 96.0,
     "vol": "High",
-    "type": "Scatter"
+    "type": "Scatter",
+    "tags": [
+      "Scatter",
+      "Free Spins"
+    ],
+    "is_hot": false,
+    "jackpot_value": 1000.0,
+    "featured": false,
+    "provider": "collective-wins"
   }
 ]

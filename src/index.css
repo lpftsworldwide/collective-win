@@ -180,20 +180,47 @@ All colors MUST be HSL.
 }
 
 /* Mystical animations */
-@keyframes shimmer {
+@keyframes shimmer-gradient {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-@keyframes shimmer {
+@keyframes shimmer-slide {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
+}
+
+/* Shimmer animation for placeholders */
+@keyframes shimmer-placeholder {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  animation: shimmer-placeholder 1.5s infinite;
+}
+
+/* Glassmorphism utility */
+.glass-effect {
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Jackpot counter animation */
+@keyframes jackpot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+.jackpot-counter {
+  animation: jackpot-pulse 2s ease-in-out infinite;
 }
 
 .shimmer-gold {
   background: linear-gradient(90deg, transparent, hsl(45 85% 50% / 0.4), transparent);
   background-size: 200% 100%;
-  animation: shimmer 3s infinite;
+  animation: shimmer-gradient 3s infinite;
 }
 
 .glow-gold {

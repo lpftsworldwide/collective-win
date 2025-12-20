@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameCardSkeleton } from "@/components/GameCardSkeleton";
-import { Search, Sparkles, Loader2, AlertCircle, Shield, Percent, Zap } from "lucide-react";
+import { Search, Sparkles, Loader2, AlertCircle, Shield, Percent, Zap, Flame, Trophy } from "lucide-react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 interface GameCatalogProps {
@@ -49,7 +49,20 @@ export const GameCatalog = ({ showFilters = true, maxGames }: GameCatalogProps) 
     
     // Category filter
     if (category !== 'all') {
-      filtered = filtered.filter(game => game.category === category);
+      if (category === 'hot') {
+        // Filter for hot games (RTP >= 96.5 or Extreme volatility)
+        filtered = filtered.filter(game => 
+          (game.rtp_certified && game.rtp_certified >= 96.5) || 
+          game.volatility === 'Extreme'
+        );
+      } else if (category === 'featured') {
+        // Filter for featured games (RTP >= 97.0)
+        filtered = filtered.filter(game => 
+          game.rtp_certified && game.rtp_certified >= 97.0
+        );
+      } else {
+        filtered = filtered.filter(game => game.category === category);
+      }
     }
     
     // Provider filter
@@ -124,6 +137,26 @@ export const GameCatalog = ({ showFilters = true, maxGames }: GameCatalogProps) 
                 All Games
                 <Badge variant="secondary" className="ml-2 bg-premium-gold/20">
                   {categoryCounts.all || 0}
+                </Badge>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="hot" 
+                className="data-[state=active]:bg-mystic-red data-[state=active]:text-white bg-gaming-card text-muted-foreground rounded-lg px-4 py-2"
+              >
+                <Flame className="w-4 h-4 mr-2" />
+                Hot Games
+                <Badge variant="secondary" className="ml-2 bg-mystic-red/20">
+                  {games?.filter(g => (g.rtp_certified && g.rtp_certified >= 96.5) || g.volatility === 'Extreme').length || 0}
+                </Badge>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="featured" 
+                className="data-[state=active]:bg-premium-gold data-[state=active]:text-gaming-dark bg-gaming-card text-muted-foreground rounded-lg px-4 py-2"
+              >
+                <Trophy className="w-4 h-4 mr-2" />
+                Featured
+                <Badge variant="secondary" className="ml-2 bg-premium-gold/20">
+                  {games?.filter(g => g.rtp_certified && g.rtp_certified >= 97.0).length || 0}
                 </Badge>
               </TabsTrigger>
               {['slots', 'live', 'table', 'crash'].map((cat) => (
