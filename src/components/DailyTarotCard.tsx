@@ -39,14 +39,24 @@ export const DailyTarotCard = () => {
     // Check if user has flipped today
     const lastFlip = localStorage.getItem('lastTarotFlip');
     const today = new Date().toDateString();
+    
     if (lastFlip === today) {
       setHasFlippedToday(true);
       // Load the card they saw today
       const savedCard = localStorage.getItem('todayTarotCard');
       if (savedCard) {
-        setCard(JSON.parse(savedCard));
-        setIsFlipped(true);
+        try {
+          setCard(JSON.parse(savedCard));
+          setIsFlipped(true);
+        } catch (e) {
+          console.error('Error parsing saved card:', e);
+        }
       }
+    } else {
+      // New day - reset flip state
+      setHasFlippedToday(false);
+      setIsFlipped(false);
+      setCard(null);
     }
   }, []);
 

@@ -103,11 +103,14 @@ export const LicensedGameCard = ({ game, onShowInfo }: LicensedGameCardProps) =>
       {/* Game Image with enhanced fallback */}
       {!imageError && game.thumbnail_url ? (
         <img 
-          src={game.thumbnail_url}
+          src={game.thumbnail_url.startsWith('/') ? game.thumbnail_url : `/game-tiles/${game.game_code}.jpg`}
           alt={game.name}
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
           loading="lazy"
-          onError={() => setImageError(true)}
+          onError={() => {
+            console.log(`Image failed to load: ${game.thumbnail_url} for game ${game.game_code}`);
+            setImageError(true);
+          }}
         />
       ) : (
         <div className={`absolute inset-0 bg-gradient-to-br ${getCategoryGradient(game.category)} opacity-90 flex items-center justify-center`}>
@@ -118,6 +121,18 @@ export const LicensedGameCard = ({ game, onShowInfo }: LicensedGameCardProps) =>
             {gameInitials}
           </div>
         </div>
+      )}
+      
+      {/* Try to load image even if thumbnail_url is missing */}
+      {!game.thumbnail_url && !imageError && (
+        <img 
+          src={`/game-tiles/${game.game_code}.jpg`}
+          alt={game.name}
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+          loading="lazy"
+          onError={() => setImageError(true)}
+          style={{ display: 'none' }}
+        />
       )}
       
       {/* Overlay gradient */}
