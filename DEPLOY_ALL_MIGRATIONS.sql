@@ -210,7 +210,6 @@ ON CONFLICT (game_code) DO UPDATE
     min_bet_aud = EXCLUDED.min_bet_aud,
     max_bet_aud = EXCLUDED.max_bet_aud,
     is_demo_available = false; -- Real money only
-END $$;
 
 -- =====================================================
 -- MIGRATION 2: ADMIN USERS TABLE FOR MASTER MODE
