@@ -1,7 +1,9 @@
 -- =====================================================
--- COLLECTIVE-WINS COMPLETE MIGRATION PACKAGE
+-- COLLECTIVE-WINS REAL MONEY COMPLETE MIGRATION
 -- Run this entire file in Supabase SQL Editor
--- REAL MONEY GAMES - NO DEMO MODE
+-- REAL MONEY CASINO - NO DEMO MODE
+-- All games configured for real money transactions (AUD)
+-- $111 Welcome Bonus is the psychological hook for new players
 -- =====================================================
 
 -- =====================================================
@@ -200,7 +202,7 @@ INSERT INTO public.licensed_games (
   ((SELECT id FROM public.game_providers WHERE code = 'collective-wins'), 'mega-ball-live', 'Mega Ball Live', 'live', 95.40, 'medium', 'active', 0.10, 1000.00, false),
   ((SELECT id FROM public.game_providers WHERE code = 'collective-wins'), 'gladiator-arena-champion', 'Gladiator Arena Champion', 'slots', 96.80, 'high', 'active', 0.20, 1000.00, false),
   ((SELECT id FROM public.game_providers WHERE code = 'collective-wins'), 'fortune-tiger-prosperity', 'Fortune Tiger Prosperity', 'slots', 96.70, 'medium', 'active', 0.20, 1000.00, false),
-  ((SELECT id FROM public.game_providers WHERE code = 'collective-wins'), 'fishing-frenzy-megaways', 'Fishing Frenzy Megaways', 'slots', 96.10, 'high', 'active', 0.20, 1000.00, true)
+  ((SELECT id FROM public.game_providers WHERE code = 'collective-wins'), 'fishing-frenzy-megaways', 'Fishing Frenzy Megaways', 'slots', 96.10, 'high', 'active', 0.20, 1000.00, false)
 ON CONFLICT (game_code) DO UPDATE
   SET
     name = EXCLUDED.name,
