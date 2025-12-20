@@ -131,7 +131,7 @@ const GamePlay = () => {
   
   // No reset function for real money - users must deposit
 
-  if (!demoGame && !licensedGame) {
+  if (!fallbackGame && !licensedGame) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

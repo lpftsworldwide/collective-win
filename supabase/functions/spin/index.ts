@@ -1,12 +1,12 @@
 /**
  * SPIN EDGE FUNCTION - REAL MONEY GAMES
  * 
- * REAL MONEY CASINO - NO DEMO MODE
+ * REFACTORED: Uses SlotEngine for deterministic outcomes
  * - Single RNG call per spin
  * - Authoritative SpinOutcome object
- * - Real money transactions (AUD)
+ * - Real money transactions
  * - Master Mode (98% win for owners)
- * - $111 Hook (85% win when balance <= $111) - Psychological attraction
+ * - $111 Hook (85% win when balance <= $111)
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -403,7 +403,7 @@ serve(async (req) => {
       });
     }
 
-    // Enforce real money wager limits (AUD)
+    // Enforce real money wager limits
     const MIN_WAGER = 0.20;
     const MAX_WAGER = 1000.00;
     
