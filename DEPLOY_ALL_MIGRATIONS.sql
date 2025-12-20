@@ -142,7 +142,7 @@ SET
   status = 'active',
   updated_at = now();
 
--- Get the Collective Wins provider ID and insert games
+-- Get the Collective Wins provider ID
 DO $$
 DECLARE
   collective_wins_provider_id UUID;
@@ -150,12 +150,17 @@ BEGIN
   SELECT id INTO collective_wins_provider_id 
   FROM public.game_providers 
   WHERE code = 'collective-wins';
+END $$;
 
-  INSERT INTO public.licensed_games (
-    provider_id, game_code, name, category, rtp_certified, volatility, status,
-    min_bet_aud, max_bet_aud, is_demo_available
-  ) VALUES
-    (collective_wins_provider_id, 'big-bass-splash', 'Big Bass Splash', 'slots', 96.71, 'high', 'active', 0.20, 1000.00, false),
+-- Insert games (outside DO block to avoid variable scope issues)
+INSERT INTO public.licensed_games (
+  provider_id, game_code, name, category, rtp_certified, volatility, status,
+  min_bet_aud, max_bet_aud, is_demo_available
+)
+SELECT 
+  (SELECT id FROM public.game_providers WHERE code = 'collective-wins'),
+  * FROM (VALUES
+    ('big-bass-splash', 'Big Bass Splash', 'slots', 96.71, 'high', 'active', 0.20, 1000.00, false),
     (collective_wins_provider_id, 'gates-of-olympus', 'Gates of Olympus', 'slots', 96.50, 'high', 'active', 0.20, 1000.00, true),
     (collective_wins_provider_id, 'sweet-bonanza', 'Sweet Bonanza', 'slots', 96.48, 'medium', 'active', 0.20, 1000.00, true),
     (collective_wins_provider_id, 'starlight-princess', 'Starlight Princess 1000', 'slots', 96.55, 'high', 'active', 0.20, 1000.00, true),
@@ -217,8 +222,7 @@ BEGIN
     status = EXCLUDED.status,
     min_bet_aud = EXCLUDED.min_bet_aud,
     max_bet_aud = EXCLUDED.max_bet_aud,
-    is_demo_available = false, -- Real money only
-    "updated_at" = now();
+    is_demo_available = false; -- Real money only
 END $$;
 
 -- =====================================================
